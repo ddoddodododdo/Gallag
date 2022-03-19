@@ -7,6 +7,9 @@
 #include "Gallag.h"
 #include "GallagDlg.h"
 #include "afxdialogex.h"
+#include <vector>
+
+using namespace std;
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -49,7 +52,7 @@ END_MESSAGE_MAP()
 // CGallagDlg 대화 상자
 
 
-
+//생성자
 CGallagDlg::CGallagDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_GALLAG_DIALOG, pParent)
 {
@@ -59,6 +62,7 @@ CGallagDlg::CGallagDlg(CWnd* pParent /*=nullptr*/)
 	player.posY = 100;
 	player.sizeX = 50;
 	player.sizeY = 50;
+	player.speed = 5;
 
 
 }
@@ -81,7 +85,7 @@ END_MESSAGE_MAP()
 BOOL CGallagDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
-
+	
 	// 시스템 메뉴에 "정보..." 메뉴 항목을 추가합니다.
 
 	// IDM_ABOUTBOX는 시스템 명령 범위에 있어야 합니다.
@@ -109,6 +113,14 @@ BOOL CGallagDlg::OnInitDialog()
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
 
+	//창 크기 조절
+	CRect rect;
+	GetWindowRect(&rect);
+	MoveWindow(rect.left, rect.top, BOARD_SIZE_X, BOARD_SIZE_Y);
+
+	SetTimer(1000, 1000 / 60, NULL);
+
+
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 
@@ -127,6 +139,7 @@ void CGallagDlg::OnSysCommand(UINT nID, LPARAM lParam)
 
 void CGallagDlg::OnTimer(UINT_PTR nIDEvent)
 {
+
 	Invalidate();
 }
 
@@ -172,9 +185,11 @@ BOOL CGallagDlg::PreTranslateMessage(MSG* pMsg) {
 				break;
 		}
 	}
+
+
+
 	return CDialogEx::PreTranslateMessage(pMsg);
 }
-
 
 // 대화 상자에 최소화 단추를 추가할 경우 아이콘을 그리려면
 //  아래 코드가 필요합니다.  문서/뷰 모델을 사용하는 MFC 애플리케이션의 경우에는
@@ -184,18 +199,34 @@ void CGallagDlg::OnPaint()
 {
 	CPaintDC dc(this);
 
+
 	ControllPlayer();
 
 	DrawObject(dc);
-	SetTimer(1000, 1000 / 60, NULL);
 }
 
 void CGallagDlg::ControllPlayer() {
-	double moveX = (InputKey.isRight - InputKey.isLeft) * PLAYER_SPEED;
-	double moveY = (InputKey.isDown - InputKey.isUp) * PLAYER_SPEED;
-
+	//Player Move
+	double moveX = (InputKey.isRight - InputKey.isLeft) * player.speed;
+	double moveY = (InputKey.isDown - InputKey.isUp) * player.speed;
 	player.posX += moveX;
 	player.posY += moveY;
+
+	//Player Bullet Move
+
+	bulletDelay++;
+	if (!(bulletDelay % 3)) {
+		GameObj bullet{ player.posX, player.posY };
+		playerBullets.push_back(bullet);
+		bulletDelay = 0;
+	}
+	/*for (int i = 0; i < playerBullets.size(); i++) {
+		playerBullets[i].posY -= 5;
+	}*/
+
+	for (auto iter = playerBullets.begin(); iter != playerBullets.end(); iter++) {
+		iter->posY -= 10;
+	}
 
 }
 
@@ -204,6 +235,19 @@ void CGallagDlg::DrawObject(CPaintDC& dc) {
 	//Draw Player
 	dc.Rectangle(player.posX - player.sizeX * 0.5, player.posY - player.sizeY * 0.5
 		, player.posX + player.sizeX * 0.5, player.posY + player.sizeY * 0.5);
+	
+	//Draw Bullet
+	for (int i = 0; i < playerBullets.size(); i++) {
+		dc.MoveTo(playerBullets[i].posX, playerBullets[i].posY);
+		dc.LineTo(playerBullets[i].posX, playerBullets[i].posY + 10);
+	}
+
+
+	/*for (GameObj bullet : playerBullets) {
+		dc.MoveTo((int)bullet.posX, (int)bullet.posY);
+		dc.LineTo((int)bullet.posX, (int)bullet.posY + 10);
+	}*/
+
 };
 
 
@@ -213,3 +257,12 @@ HCURSOR CGallagDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+
+//void CGallagDlg::CalcWindowRect(LPRECT lpClientRect, UINT nAdjustType)
+//{
+//	lpClientRect->right = 500;
+//	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
+//
+//	CDialogEx::CalcWindowRect(lpClientRect, nAdjustType);
+//}

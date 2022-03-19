@@ -3,7 +3,9 @@
 //
 
 #pragma once
+#include <vector>
 
+using namespace std;
 
 // CGallagDlg 대화 상자
 class CGallagDlg : public CDialogEx
@@ -11,13 +13,21 @@ class CGallagDlg : public CDialogEx
 // 생성입니다.
 public:
 	CGallagDlg(CWnd* pParent = nullptr);	// 표준 생성자입니다.
+	const int BOARD_SIZE_X = 600;
+	const int BOARD_SIZE_Y = 800;
+	int temp = 0;
 
 	class GameObj {
+		public:
+
 		public:
 			double posX;
 			double posY;
 			double sizeX;
 			double sizeY;
+			double velocityX;
+			double velocityY;
+			double speed;
 	};
 
 	class InputKeyClass {
@@ -28,10 +38,12 @@ public:
 			bool isRight = false;
 	};
 
-	const double PLAYER_SPEED = 5.0;
 
 	InputKeyClass InputKey;
 	GameObj player;
+
+	vector<GameObj> playerBullets;
+	int bulletDelay = 0;
 
 	
 // 대화 상자 데이터입니다.
@@ -60,4 +72,5 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
+//	virtual void CalcWindowRect(LPRECT lpClientRect, UINT nAdjustType = adjustBorder);
 };
