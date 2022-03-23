@@ -58,8 +58,8 @@ CGallagDlg::CGallagDlg(CWnd* pParent /*=nullptr*/)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
-	player.posX = 100;
-	player.posY = 100;
+	player.posX = BOARD_SIZE_X * 0.5;
+	player.posY = BOARD_SIZE_Y * 0.8;
 	player.sizeX = 50;
 	player.sizeY = 50;
 	player.speed = 5;
@@ -201,6 +201,7 @@ void CGallagDlg::OnPaint()
 
 
 	ControllPlayer();
+	ControllEnemy();
 
 	DrawObject(dc);
 }
@@ -209,24 +210,45 @@ void CGallagDlg::ControllPlayer() {
 	//Player Move
 	double moveX = (InputKey.isRight - InputKey.isLeft) * player.speed;
 	double moveY = (InputKey.isDown - InputKey.isUp) * player.speed;
-	player.posX += moveX;
-	player.posY += moveY;
+	if (IsInGameBoard(player.posX + moveX, player.posY + moveY)) {
+		player.posX += moveX;
+		player.posY += moveY;
+	}
 
-	//Player Bullet Move
 
-	bulletDelay++;
-	if (!(bulletDelay % 3)) {
+	//Make Bullet
+	bulletMakeCount++;
+	if (!(bulletMakeCount % 3)) {
 		GameObj bullet{ player.posX, player.posY };
 		playerBullets.push_back(bullet);
-		bulletDelay = 0;
+		bulletMakeCount = 0;
 	}
-	/*for (int i = 0; i < playerBullets.size(); i++) {
-		playerBullets[i].posY -= 5;
-	}*/
 
-	for (auto iter = playerBullets.begin(); iter != playerBullets.end(); iter++) {
+	//Player Bullet Move
+	for (auto iter = playerBullets.begin(); iter != playerBullets.end();) {
 		iter->posY -= 10;
+		if (iter->posY < 0) {
+			iter = playerBullets.erase(iter);
+		}
+		else iter++;
 	}
+
+}
+
+bool CGallagDlg::IsInGameBoard(int posX, int posY) {
+	bool flag1 = posX > 0 && posY > 0;
+	bool flag2 = posX < BOARD_SIZE_X && posY < BOARD_SIZE_Y - 40;
+
+	return flag1 && flag2;
+}
+
+void CGallagDlg::ControllEnemy() {
+	//Make Enemy
+
+	
+
+	//Enemy Move
+	
 
 }
 
@@ -242,11 +264,13 @@ void CGallagDlg::DrawObject(CPaintDC& dc) {
 		dc.LineTo(playerBullets[i].posX, playerBullets[i].posY + 10);
 	}
 
-
-	/*for (GameObj bullet : playerBullets) {
-		dc.MoveTo((int)bullet.posX, (int)bullet.posY);
-		dc.LineTo((int)bullet.posX, (int)bullet.posY + 10);
-	}*/
+	//DrawEnemy
+	for (int i = 0; i < enemys.size(); i++) {
+		double sizeX = enemys[i].sizeX * 0.5;
+		double sizeY = enemys[i].sizeY * 0.5;
+		dc.Rectangle(enemys[i].posX - sizeX, enemys[i].posY - sizeY
+			, enemys[i].posX + sizeX, enemys[i].posY + sizeY);
+	}
 
 };
 

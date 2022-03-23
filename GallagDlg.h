@@ -27,7 +27,7 @@ public:
 			double sizeY;
 			double velocityX;
 			double velocityY;
-			double speed;
+			double speed = 1;
 	};
 
 	class InputKeyClass {
@@ -43,7 +43,9 @@ public:
 	GameObj player;
 
 	vector<GameObj> playerBullets;
-	int bulletDelay = 0;
+	vector<GameObj> enemys;
+	int bulletMakeCount = 0;
+	int enemyMakeCount = 0;
 
 	
 // 대화 상자 데이터입니다.
@@ -59,6 +61,8 @@ protected:
 
 	// 생성된 메시지 맵 함수
 	void ControllPlayer();
+	void ControllEnemy();
+	bool IsInGameBoard(int posX, int posY);
 
 	void DrawObject(CPaintDC& dc);
 
