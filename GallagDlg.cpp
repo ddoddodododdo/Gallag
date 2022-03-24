@@ -60,8 +60,8 @@ CGallagDlg::CGallagDlg(CWnd* pParent /*=nullptr*/)
 
 	player.posX = BOARD_SIZE_X * 0.5;
 	player.posY = BOARD_SIZE_Y * 0.8;
-	player.sizeX = 50;
-	player.sizeY = 50;
+	player.sizeX = 20;
+	player.sizeY = 30;
 	player.speed = 5;
 
 
@@ -195,6 +195,13 @@ BOOL CGallagDlg::PreTranslateMessage(MSG* pMsg) {
 //  아래 코드가 필요합니다.  문서/뷰 모델을 사용하는 MFC 애플리케이션의 경우에는
 //  프레임워크에서 이 작업을 자동으로 수행합니다.
 
+bool CGallagDlg::IsInGameBoard(GameObj obj) {
+	bool flag1 = obj.posX > 0 && obj.posY > 0;
+	bool flag2 = obj.posX < BOARD_SIZE_X && obj.posY < BOARD_SIZE_Y - 40;
+
+	return flag1 && flag2;
+}
+
 void CGallagDlg::OnPaint()
 {
 	CPaintDC dc(this);
@@ -203,6 +210,8 @@ void CGallagDlg::OnPaint()
 	ControllPlayer();
 	ControllEnemy();
 
+	Collision();
+
 	DrawObject(dc);
 }
 
@@ -210,7 +219,8 @@ void CGallagDlg::ControllPlayer() {
 	//Player Move
 	double moveX = (InputKey.isRight - InputKey.isLeft) * player.speed;
 	double moveY = (InputKey.isDown - InputKey.isUp) * player.speed;
-	if (IsInGameBoard(player.posX + moveX, player.posY + moveY)) {
+	if (player.posX + moveX > player.sizeX && player.posY + moveY> player.sizeY && player.posX + moveX < BOARD_SIZE_X - player.sizeX 
+		&& player.posY + moveY < BOARD_SIZE_Y - player.sizeX - 30) {
 		player.posX += moveX;
 		player.posY += moveY;
 	}
@@ -218,56 +228,92 @@ void CGallagDlg::ControllPlayer() {
 
 	//Make Bullet
 	bulletMakeCount++;
-	if (!(bulletMakeCount % 3)) {
-		GameObj bullet{ player.posX, player.posY };
+	if (bulletMakeCount > 3) {
+		GameObj bullet{ player.posX, player.posY, 0, 10};
+		bullet.velocityX = 0;
+		bullet.velocityY = -10;
 		playerBullets.push_back(bullet);
 		bulletMakeCount = 0;
 	}
 
 	//Player Bullet Move
 	for (auto iter = playerBullets.begin(); iter != playerBullets.end();) {
-		iter->posY -= 10;
-		if (iter->posY < 0) {
+		iter->posY += iter->velocityX;
+		iter->posY += iter->velocityY;
+
+		if (!IsInGameBoard(*iter)) {
 			iter = playerBullets.erase(iter);
 		}
-		else iter++;
+		else 
+			iter++;
 	}
 
 }
 
-bool CGallagDlg::IsInGameBoard(int posX, int posY) {
-	bool flag1 = posX > 0 && posY > 0;
-	bool flag2 = posX < BOARD_SIZE_X && posY < BOARD_SIZE_Y - 40;
-
-	return flag1 && flag2;
-}
 
 void CGallagDlg::ControllEnemy() {
 	//Make Enemy
-
-	
+	enemyMakeCount++;
+	if (enemyMakeCount > 60) {
+		GameObj enemy{BOARD_SIZE_X, 100, 20, 20, -10};
+		enemys.push_back(enemy);
+		enemyMakeCount = 0;
+	}
 
 	//Enemy Move
-	
+	for (auto iter = enemys.begin(); iter != enemys.end();) {
+		iter->posX += iter->velocityX;
+		iter->posY += iter->velocityY;
+
+		if (!IsInGameBoard(*iter)) {
+			iter = enemys.erase(iter);
+		}
+		else 
+			iter++;
+	}
+
+}
+
+void CGallagDlg::Collision()
+{
+	//player bullet - enemy
+	for (auto bIter = playerBullets.begin(); bIter != playerBullets.end();) {
+		breakContinue:
+		for (auto eIter = enemys.begin(); eIter != enemys.end();) {
+			bool xFlag = (eIter->posX - eIter->sizeX) <= bIter->posX
+						&& bIter->posX <= (eIter->posX + eIter->sizeX);
+			bool yFlag = (eIter->posY - eIter->sizeY) <= bIter->posY
+						&& bIter->posY <= (eIter->posY + eIter->sizeY);
+			if (xFlag && yFlag) {
+				eIter = enemys.erase(eIter);
+				bIter = playerBullets.erase(bIter);
+				goto breakContinue;
+			}
+			else
+				eIter++;
+		}
+		bIter++;
+	}
+
 
 }
 
 void CGallagDlg::DrawObject(CPaintDC& dc) {
 
 	//Draw Player
-	dc.Rectangle(player.posX - player.sizeX * 0.5, player.posY - player.sizeY * 0.5
-		, player.posX + player.sizeX * 0.5, player.posY + player.sizeY * 0.5);
+	dc.Rectangle(player.posX - player.sizeX, player.posY - player.sizeY
+		, player.posX + player.sizeX, player.posY + player.sizeY);
 	
 	//Draw Bullet
 	for (int i = 0; i < playerBullets.size(); i++) {
 		dc.MoveTo(playerBullets[i].posX, playerBullets[i].posY);
-		dc.LineTo(playerBullets[i].posX, playerBullets[i].posY + 10);
+		dc.LineTo(playerBullets[i].posX, playerBullets[i].posY + playerBullets[i].sizeY);
 	}
 
 	//DrawEnemy
 	for (int i = 0; i < enemys.size(); i++) {
-		double sizeX = enemys[i].sizeX * 0.5;
-		double sizeY = enemys[i].sizeY * 0.5;
+		double sizeX = enemys[i].sizeX;
+		double sizeY = enemys[i].sizeY;
 		dc.Rectangle(enemys[i].posX - sizeX, enemys[i].posY - sizeY
 			, enemys[i].posX + sizeX, enemys[i].posY + sizeY);
 	}

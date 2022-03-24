@@ -60,10 +60,12 @@ protected:
 	HICON m_hIcon;
 
 	// 생성된 메시지 맵 함수
+	bool IsInGameBoard(GameObj obj);
+
 	void ControllPlayer();
 	void ControllEnemy();
-	bool IsInGameBoard(int posX, int posY);
 
+	void Collision();
 	void DrawObject(CPaintDC& dc);
 
 	BOOL PreTranslateMessage(MSG* pMsg);
