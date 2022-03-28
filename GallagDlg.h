@@ -28,6 +28,7 @@ public:
 			double velocityX;
 			double velocityY;
 			double speed = 1;
+			int hp;
 	};
 
 	class InputKeyClass {
@@ -38,16 +39,22 @@ public:
 			bool isRight = false;
 	};
 
+	class ObjMaker {
+		public:
+			int max;
+			int count = 0;
+	};
 
 	InputKeyClass InputKey;
 	GameObj player;
 
 	vector<GameObj> playerBullets;
 	vector<GameObj> enemys;
-	int bulletMakeCount = 0;
-	int enemyMakeCount = 0;
 
-	
+	ObjMaker bulletMaker;
+	ObjMaker enemyMaker;
+
+
 // 대화 상자 데이터입니다.
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_GALLAG_DIALOG };

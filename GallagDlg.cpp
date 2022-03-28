@@ -62,8 +62,10 @@ CGallagDlg::CGallagDlg(CWnd* pParent /*=nullptr*/)
 	player.posY = BOARD_SIZE_Y * 0.8;
 	player.sizeX = 20;
 	player.sizeY = 30;
-	player.speed = 5;
+	player.speed = 10;
 
+	bulletMaker.max = 3;
+	enemyMaker.max = 60;
 
 }
 
@@ -118,7 +120,9 @@ BOOL CGallagDlg::OnInitDialog()
 	GetWindowRect(&rect);
 	MoveWindow(rect.left, rect.top, BOARD_SIZE_X, BOARD_SIZE_Y);
 
-	SetTimer(1000, 1000 / 60, NULL);
+
+
+	SetTimer(1000, 1000 / 30, NULL);
 
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
@@ -227,13 +231,12 @@ void CGallagDlg::ControllPlayer() {
 
 
 	//Make Bullet
-	bulletMakeCount++;
-	if (bulletMakeCount > 3) {
+	if (++bulletMaker.count > bulletMaker.max) {
 		GameObj bullet{ player.posX, player.posY, 0, 10};
 		bullet.velocityX = 0;
-		bullet.velocityY = -10;
+		bullet.velocityY = -20;
 		playerBullets.push_back(bullet);
-		bulletMakeCount = 0;
+		bulletMaker.count = 0;
 	}
 
 	//Player Bullet Move
@@ -253,11 +256,11 @@ void CGallagDlg::ControllPlayer() {
 
 void CGallagDlg::ControllEnemy() {
 	//Make Enemy
-	enemyMakeCount++;
-	if (enemyMakeCount > 60) {
-		GameObj enemy{BOARD_SIZE_X, 100, 20, 20, -10};
+	if (++enemyMaker.count > enemyMaker.max) {
+		GameObj enemy{BOARD_SIZE_X, 100, 20, 20, -5};
+		enemy.hp = 3;
 		enemys.push_back(enemy);
-		enemyMakeCount = 0;
+		enemyMaker.count = 0;
 	}
 
 	//Enemy Move
@@ -285,7 +288,12 @@ void CGallagDlg::Collision()
 			bool yFlag = (eIter->posY - eIter->sizeY) <= bIter->posY
 						&& bIter->posY <= (eIter->posY + eIter->sizeY);
 			if (xFlag && yFlag) {
-				eIter = enemys.erase(eIter);
+
+				eIter->hp--;
+				if (eIter->hp <= 0) {
+					eIter = enemys.erase(eIter);
+				}
+
 				bIter = playerBullets.erase(bIter);
 				goto breakContinue;
 			}
@@ -300,6 +308,14 @@ void CGallagDlg::Collision()
 
 void CGallagDlg::DrawObject(CPaintDC& dc) {
 
+	//DrawEnemy
+	for (int i = 0; i < enemys.size(); i++) {
+		double sizeX = enemys[i].sizeX;
+		double sizeY = enemys[i].sizeY;
+		dc.Rectangle(enemys[i].posX - sizeX, enemys[i].posY - sizeY
+			, enemys[i].posX + sizeX, enemys[i].posY + sizeY);
+	}
+
 	//Draw Player
 	dc.Rectangle(player.posX - player.sizeX, player.posY - player.sizeY
 		, player.posX + player.sizeX, player.posY + player.sizeY);
@@ -308,14 +324,6 @@ void CGallagDlg::DrawObject(CPaintDC& dc) {
 	for (int i = 0; i < playerBullets.size(); i++) {
 		dc.MoveTo(playerBullets[i].posX, playerBullets[i].posY);
 		dc.LineTo(playerBullets[i].posX, playerBullets[i].posY + playerBullets[i].sizeY);
-	}
-
-	//DrawEnemy
-	for (int i = 0; i < enemys.size(); i++) {
-		double sizeX = enemys[i].sizeX;
-		double sizeY = enemys[i].sizeY;
-		dc.Rectangle(enemys[i].posX - sizeX, enemys[i].posY - sizeY
-			, enemys[i].posX + sizeX, enemys[i].posY + sizeY);
 	}
 
 };
