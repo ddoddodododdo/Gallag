@@ -1,17 +1,21 @@
 ﻿  GallagDlg.cpp
-D:\school\project\Gallag\GallagDlg.cpp(267,17): warning C4838: 'const int'에서 'double'(으)로의 변환에는 축소 변환이 필요합니다.
-D:\school\project\Gallag\GallagDlg.cpp(320,20): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-D:\school\project\Gallag\GallagDlg.cpp(324,45): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\school\project\Gallag\GallagDlg.cpp(324,21): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\school\project\Gallag\GallagDlg.cpp(323,55): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\school\project\Gallag\GallagDlg.cpp(323,31): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\school\project\Gallag\GallagDlg.cpp(329,45): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\school\project\Gallag\GallagDlg.cpp(329,17): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\school\project\Gallag\GallagDlg.cpp(328,55): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\school\project\Gallag\GallagDlg.cpp(328,27): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\school\project\Gallag\GallagDlg.cpp(332,20): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-D:\school\project\Gallag\GallagDlg.cpp(333,52): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\school\project\Gallag\GallagDlg.cpp(333,29): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\school\project\Gallag\GallagDlg.cpp(334,58): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\school\project\Gallag\GallagDlg.cpp(334,29): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\school\project\Gallag\GallagDlg.cpp(268,17): warning C4838: 'const int'에서 'double'(으)로의 변환에는 축소 변환이 필요합니다.
+D:\school\project\Gallag\GallagDlg.cpp(322,20): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+D:\school\project\Gallag\GallagDlg.cpp(326,45): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\school\project\Gallag\GallagDlg.cpp(326,21): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\school\project\Gallag\GallagDlg.cpp(325,55): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\school\project\Gallag\GallagDlg.cpp(325,31): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\school\project\Gallag\GallagDlg.cpp(327,31): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\school\project\Gallag\GallagDlg.cpp(328,31): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\school\project\Gallag\GallagDlg.cpp(329,89): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\school\project\Gallag\GallagDlg.cpp(329,68): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\school\project\Gallag\GallagDlg.cpp(337,27): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\school\project\Gallag\GallagDlg.cpp(338,27): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\school\project\Gallag\GallagDlg.cpp(339,79): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\school\project\Gallag\GallagDlg.cpp(339,63): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\school\project\Gallag\GallagDlg.cpp(344,20): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+D:\school\project\Gallag\GallagDlg.cpp(345,52): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\school\project\Gallag\GallagDlg.cpp(345,29): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\school\project\Gallag\GallagDlg.cpp(346,58): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\school\project\Gallag\GallagDlg.cpp(346,29): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
   Gallag.vcxproj -> D:\school\project\Gallag\Debug\Gallag.exe

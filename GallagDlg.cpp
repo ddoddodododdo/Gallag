@@ -61,7 +61,7 @@ CGallagDlg::CGallagDlg(CWnd* pParent /*=nullptr*/)
 	player.posX = BOARD_SIZE_X * 0.5;
 	player.posY = BOARD_SIZE_Y * 0.8;
 	player.sizeX = 20;
-	player.sizeY = 30;
+	player.sizeY = 20;
 	player.speed = 10;
 
 	bulletMaker.max = 3;
@@ -79,6 +79,7 @@ BEGIN_MESSAGE_MAP(CGallagDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_WM_TIMER()
+//	ON_WM_CTLCOLOR()
 END_MESSAGE_MAP()
 
 
@@ -223,7 +224,7 @@ void CGallagDlg::OnPaint()
 	Collision();
 
 	DrawObject(dc);
-	//gameImage.Draw(dc, 0, 0);
+	
 }
 
 void CGallagDlg::ControllPlayer() {
@@ -314,6 +315,8 @@ void CGallagDlg::Collision()
 }
 
 void CGallagDlg::DrawObject(CPaintDC& dc) {
+	int drawStartX;
+	int drawStartY;
 
 	//DrawEnemy
 	for (int i = 0; i < enemys.size(); i++) {
@@ -321,11 +324,21 @@ void CGallagDlg::DrawObject(CPaintDC& dc) {
 		double sizeY = enemys[i].sizeY;
 		dc.Rectangle(enemys[i].posX - sizeX, enemys[i].posY - sizeY
 			, enemys[i].posX + sizeX, enemys[i].posY + sizeY);
+		drawStartX = enemys[i].posX - enemys[i].sizeX;
+		drawStartY = enemys[i].posY - enemys[i].sizeY;
+		gameImage.StretchBlt(dc, drawStartX, drawStartY, enemys[i].sizeX * 2, enemys[i].sizeY * 2
+			, 16 + 24 * 6, 55 + 24 * 2, 16, 16);
+		
 	}
 
 	//Draw Player
-	dc.Rectangle(player.posX - player.sizeX, player.posY - player.sizeY
-		, player.posX + player.sizeX, player.posY + player.sizeY);
+	/*dc.Rectangle(player.posX - player.sizeX, player.posY - player.sizeY
+		, player.posX + player.sizeX, player.posY + player.sizeY);*/
+	drawStartX = player.posX - player.sizeX;
+	drawStartY = player.posY - player.sizeY;
+	gameImage.StretchBlt(dc, drawStartX, drawStartY, player.sizeX*2, player.sizeY*2
+							, 16 + 24*6, 55, 16, 16);
+	
 	
 	//Draw Bullet
 	for (int i = 0; i < playerBullets.size(); i++) {
@@ -333,6 +346,10 @@ void CGallagDlg::DrawObject(CPaintDC& dc) {
 		dc.LineTo(playerBullets[i].posX, playerBullets[i].posY + playerBullets[i].sizeY);
 	}
 
+
+	//시작점(16, 55)
+	//이미지 간격 24(8 + 16), 이미지 크기(16, 16)
+	gameImage.StretchBlt(dc, 32, 32, 32, 32, 16, 55, 16, 16);
 };
 
 
@@ -343,11 +360,3 @@ HCURSOR CGallagDlg::OnQueryDragIcon()
 }
 
 
-
-//void CGallagDlg::CalcWindowRect(LPRECT lpClientRect, UINT nAdjustType)
-//{
-//	lpClientRect->right = 500;
-//	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
-//
-//	CDialogEx::CalcWindowRect(lpClientRect, nAdjustType);
-//}
