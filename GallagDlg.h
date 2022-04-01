@@ -45,6 +45,8 @@ public:
 			int count = 0;
 	};
 
+	CImage gameImage;
+
 	InputKeyClass InputKey;
 	GameObj player;
 

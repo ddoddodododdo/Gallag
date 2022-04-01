@@ -113,7 +113,13 @@ BOOL CGallagDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// 큰 아이콘을 설정합니다.
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
+
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
+	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+	gameImage.Load(L"Galaga.png");
 
 	//창 크기 조절
 	CRect rect;
@@ -217,6 +223,7 @@ void CGallagDlg::OnPaint()
 	Collision();
 
 	DrawObject(dc);
+	//gameImage.Draw(dc, 0, 0);
 }
 
 void CGallagDlg::ControllPlayer() {
@@ -279,9 +286,8 @@ void CGallagDlg::ControllEnemy() {
 
 void CGallagDlg::Collision()
 {
-	//player bullet - enemy
+	//player bullet ㅡ enemy
 	for (auto bIter = playerBullets.begin(); bIter != playerBullets.end();) {
-		breakContinue:
 		for (auto eIter = enemys.begin(); eIter != enemys.end();) {
 			bool xFlag = (eIter->posX - eIter->sizeX) <= bIter->posX
 						&& bIter->posX <= (eIter->posX + eIter->sizeX);
@@ -295,12 +301,13 @@ void CGallagDlg::Collision()
 				}
 
 				bIter = playerBullets.erase(bIter);
-				goto breakContinue;
+				goto doubleBreak;
 			}
 			else
 				eIter++;
 		}
 		bIter++;
+		doubleBreak:;
 	}
 
 
