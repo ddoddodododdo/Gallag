@@ -315,19 +315,26 @@ void CGallagDlg::Collision()
 }
 
 void CGallagDlg::DrawObject(CPaintDC& dc) {
+	//BackGround
+	gameImage.StretchBlt(dc, 0, 0, BOARD_SIZE_X, BOARD_SIZE_Y, 0, 0, 1, 1);
+
 	int drawStartX;
 	int drawStartY;
 
 	//DrawEnemy
 	for (int i = 0; i < enemys.size(); i++) {
-		double sizeX = enemys[i].sizeX;
-		double sizeY = enemys[i].sizeY;
-		dc.Rectangle(enemys[i].posX - sizeX, enemys[i].posY - sizeY
-			, enemys[i].posX + sizeX, enemys[i].posY + sizeY);
 		drawStartX = enemys[i].posX - enemys[i].sizeX;
 		drawStartY = enemys[i].posY - enemys[i].sizeY;
-		gameImage.StretchBlt(dc, drawStartX, drawStartY, enemys[i].sizeX * 2, enemys[i].sizeY * 2
+
+		int sizeY = enemys[i].sizeY * 2;
+		gameImage.StretchBlt(dc, drawStartX, drawStartY + sizeY, enemys[i].sizeX * 2, -sizeY
 			, 16 + 24 * 6, 55 + 24 * 2, 16, 16);
+
+
+		/*double sizeX = enemys[i].sizeX;
+		double sizeY = enemys[i].sizeY;
+		dc.Rectangle(enemys[i].posX - sizeX, enemys[i].posY - sizeY
+			, enemys[i].posX + sizeX, enemys[i].posY + sizeY);*/
 		
 	}
 
@@ -340,16 +347,18 @@ void CGallagDlg::DrawObject(CPaintDC& dc) {
 							, 16 + 24*6, 55, 16, 16);
 	
 	
-	//Draw Bullet
+	//Draw Player Bullet
 	for (int i = 0; i < playerBullets.size(); i++) {
+		gameImage.StretchBlt(dc, playerBullets[i].posX - 4, playerBullets[i].posY + 16
+							, 6, -16, 374, 51, 3, 8);
 		dc.MoveTo(playerBullets[i].posX, playerBullets[i].posY);
 		dc.LineTo(playerBullets[i].posX, playerBullets[i].posY + playerBullets[i].sizeY);
 	}
 
 
-	//시작점(16, 55)
+	//맨 왼쪽 시작점(16, 55)
 	//이미지 간격 24(8 + 16), 이미지 크기(16, 16)
-	gameImage.StretchBlt(dc, 32, 32, 32, 32, 16, 55, 16, 16);
+	//gameImage.StretchBlt(dc, 32, 32, 32, 32, 16, 55, 16, 16);
 };
 
 
