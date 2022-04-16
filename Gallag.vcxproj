@@ -207,6 +207,9 @@
     <None Include="res\Gallag.rc2" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Galaga.bmp" />
+    <Image Include="Galaga.png" />
+    <Image Include="res\bitmap1.bmp" />
     <Image Include="res\Gallag.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -89,4 +89,5 @@ public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 //	virtual void CalcWindowRect(LPRECT lpClientRect, UINT nAdjustType = adjustBorder);
 //	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+//	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 };

@@ -80,6 +80,7 @@ BEGIN_MESSAGE_MAP(CGallagDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_WM_TIMER()
 //	ON_WM_CTLCOLOR()
+//ON_WM_CTLCOLOR()
 END_MESSAGE_MAP()
 
 
@@ -216,12 +217,30 @@ bool CGallagDlg::IsInGameBoard(GameObj obj) {
 void CGallagDlg::OnPaint()
 {
 	CPaintDC dc(this);
-
+	
 
 	ControllPlayer();
 	ControllEnemy();
 
 	Collision();
+
+
+	/*CDC MemDC;
+	BITMAP bmpInfo;
+	MemDC.CreateCompatibleDC(&dc);
+
+	CBitmap bmp;
+	CBitmap *oldBmp = NULL;
+	bmp.LoadBitmapW(IDB_GAME);
+	bmp.GetBitmap(&bmpInfo);
+	oldBmp = MemDC.SelectObject(&bmp);
+	dc.BitBlt(0, 0, bmpInfo.bmWidth, bmpInfo.bmHeight, &MemDC, 0, 0, SRCCOPY);
+	MemDC.SelectObject(oldBmp);
+
+	dc.TransparentBlt(0, 0, bmpInfo.bmWidth, bmpInfo.bmHeight, &MemDC
+		, 0, 0, bmpInfo.bmWidth, bmpInfo.bmHeight, RGB(0, 0, 0));*/
+
+	
 
 	DrawObject(dc);
 	
@@ -315,6 +334,7 @@ void CGallagDlg::Collision()
 }
 
 void CGallagDlg::DrawObject(CPaintDC& dc) {
+	
 	//BackGround
 	gameImage.StretchBlt(dc, 0, 0, BOARD_SIZE_X, BOARD_SIZE_Y, 0, 0, 1, 1);
 
@@ -354,7 +374,7 @@ void CGallagDlg::DrawObject(CPaintDC& dc) {
 		dc.MoveTo(playerBullets[i].posX, playerBullets[i].posY);
 		dc.LineTo(playerBullets[i].posX, playerBullets[i].posY + playerBullets[i].sizeY);
 	}
-
+	::TransparentBlt(dc, 0, 0, BOARD_SIZE_X, BOARD_SIZE_Y, dc, 0, 0, 1, 1, RGB(0, 0, 0));
 
 	//맨 왼쪽 시작점(16, 55)
 	//이미지 간격 24(8 + 16), 이미지 크기(16, 16)
