@@ -63,8 +63,11 @@ CGallagDlg::CGallagDlg(CWnd* pParent /*=nullptr*/)
 	player.sizeX = 20;
 	player.sizeY = 20;
 	player.speed = 10;
+	player.hp = 3;
 
-	bulletMaker.max = 3;
+	player.bulletMaker.max = 3;
+	
+
 	enemyMaker.max = 60;
 
 }
@@ -127,7 +130,6 @@ BOOL CGallagDlg::OnInitDialog()
 	CRect rect;
 	GetWindowRect(&rect);
 	MoveWindow(rect.left, rect.top, BOARD_SIZE_X, BOARD_SIZE_Y);
-
 
 
 	SetTimer(1000, 1000 / 30, NULL);
@@ -223,23 +225,6 @@ void CGallagDlg::OnPaint()
 	ControllEnemy();
 
 	Collision();
-
-
-	/*CDC MemDC;
-	BITMAP bmpInfo;
-	MemDC.CreateCompatibleDC(&dc);
-
-	CBitmap bmp;
-	CBitmap *oldBmp = NULL;
-	bmp.LoadBitmapW(IDB_GAME);
-	bmp.GetBitmap(&bmpInfo);
-	oldBmp = MemDC.SelectObject(&bmp);
-	dc.BitBlt(0, 0, bmpInfo.bmWidth, bmpInfo.bmHeight, &MemDC, 0, 0, SRCCOPY);
-	MemDC.SelectObject(oldBmp);
-
-	dc.TransparentBlt(0, 0, bmpInfo.bmWidth, bmpInfo.bmHeight, &MemDC
-		, 0, 0, bmpInfo.bmWidth, bmpInfo.bmHeight, RGB(0, 0, 0));*/
-
 	
 
 	DrawObject(dc);
@@ -257,13 +242,13 @@ void CGallagDlg::ControllPlayer() {
 	}
 
 
-	//Make Bullet
-	if (++bulletMaker.count > bulletMaker.max) {
+	//Make Player Bullet
+	if (++player.bulletMaker.count > player.bulletMaker.max) {
 		GameObj bullet{ player.posX, player.posY, 0, 10};
 		bullet.velocityX = 0;
 		bullet.velocityY = -20;
 		playerBullets.push_back(bullet);
-		bulletMaker.count = 0;
+		player.bulletMaker.count = 0;
 	}
 
 	//Player Bullet Move
@@ -286,19 +271,40 @@ void CGallagDlg::ControllEnemy() {
 	if (++enemyMaker.count > enemyMaker.max) {
 		GameObj enemy{BOARD_SIZE_X, 100, 20, 20, -5};
 		enemy.hp = 3;
+		enemy.bulletMaker.max = 10;
 		enemys.push_back(enemy);
 		enemyMaker.count = 0;
 	}
 
-	//Enemy Move
+	//Enemy Move & Make bullet
 	for (auto iter = enemys.begin(); iter != enemys.end();) {
+		//Make bullet
+		if (++iter->bulletMaker.count > iter->bulletMaker.max) {
+			GameObj bullet{ iter->posX, iter->posY};
+			bullet.velocityY = 10;
+
+			enemyBullets.push_back(bullet);
+			iter->bulletMaker.count = 0;
+		}
+
+		//Move Enemy
 		iter->posX += iter->velocityX;
 		iter->posY += iter->velocityY;
-
 		if (!IsInGameBoard(*iter)) {
 			iter = enemys.erase(iter);
 		}
 		else 
+			iter++;
+	}
+
+	//Move Enemy Bullet
+	for (auto iter = enemyBullets.begin(); iter != enemyBullets.end();) {
+		iter->posX += iter->velocityX;
+		iter->posY += iter->velocityY;
+
+		if (!IsInGameBoard(*iter))
+			iter = enemyBullets.erase(iter);
+		else
 			iter++;
 	}
 
@@ -331,6 +337,21 @@ void CGallagDlg::Collision()
 	}
 
 
+	//enemy bullet - player
+	for (auto iter = enemyBullets.begin(); iter != enemyBullets.end();) {
+		bool xFlag = (player.posX - player.sizeX <= iter->posX)
+					&& (iter->posX <= player.posX + player.sizeX);
+		bool yFlag = (player.posY - player.sizeY <= iter->posY)
+			&& (iter->posY <= player.posY + player.sizeY);
+
+		if (xFlag && yFlag) {
+			iter = enemyBullets.erase(iter);
+			player.hp--;
+		}
+		else
+			iter++;
+	}
+
 }
 
 void CGallagDlg::DrawObject(CPaintDC& dc) {
@@ -341,6 +362,8 @@ void CGallagDlg::DrawObject(CPaintDC& dc) {
 	int drawStartX;
 	int drawStartY;
 
+	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 	//DrawEnemy
 	for (int i = 0; i < enemys.size(); i++) {
 		drawStartX = enemys[i].posX - enemys[i].sizeX;
@@ -350,35 +373,46 @@ void CGallagDlg::DrawObject(CPaintDC& dc) {
 		gameImage.StretchBlt(dc, drawStartX, drawStartY + sizeY, enemys[i].sizeX * 2, -sizeY
 			, 16 + 24 * 6, 55 + 24 * 2, 16, 16);
 
-
-		/*double sizeX = enemys[i].sizeX;
-		double sizeY = enemys[i].sizeY;
-		dc.Rectangle(enemys[i].posX - sizeX, enemys[i].posY - sizeY
-			, enemys[i].posX + sizeX, enemys[i].posY + sizeY);*/
 		
 	}
 
+	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+	//DrawEnemyBullets
+	for (auto iter = enemyBullets.begin(); iter != enemyBullets.end(); iter++) {
+		dc.Ellipse(iter->posX + 3, iter->posY + 3, iter->posX - 3, iter->posY - 3);
+
+	}
+
+	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 	//Draw Player
-	/*dc.Rectangle(player.posX - player.sizeX, player.posY - player.sizeY
-		, player.posX + player.sizeX, player.posY + player.sizeY);*/
 	drawStartX = player.posX - player.sizeX;
 	drawStartY = player.posY - player.sizeY;
 	gameImage.StretchBlt(dc, drawStartX, drawStartY, player.sizeX*2, player.sizeY*2
 							, 16 + 24*6, 55, 16, 16);
 	
-	
+	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ	
 	//Draw Player Bullet
 	for (int i = 0; i < playerBullets.size(); i++) {
 		gameImage.StretchBlt(dc, playerBullets[i].posX - 4, playerBullets[i].posY + 16
 							, 6, -16, 374, 51, 3, 8);
-		dc.MoveTo(playerBullets[i].posX, playerBullets[i].posY);
-		dc.LineTo(playerBullets[i].posX, playerBullets[i].posY + playerBullets[i].sizeY);
 	}
-	::TransparentBlt(dc, 0, 0, BOARD_SIZE_X, BOARD_SIZE_Y, dc, 0, 0, 1, 1, RGB(0, 0, 0));
+
+	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+	//Draw Player Hp
+	for (int i = 0; i < player.hp; i++) {
+		gameImage.TransparentBlt(dc, player.sizeX * i * 2, BOARD_SIZE_Y - player.sizeY * 2 - 48, player.sizeX * 2, player.sizeY * 2
+			, 16 + 24 * 6, 55, 16, 16, RGB(0,0,0));
+	}
+
 
 	//맨 왼쪽 시작점(16, 55)
 	//이미지 간격 24(8 + 16), 이미지 크기(16, 16)
 	//gameImage.StretchBlt(dc, 32, 32, 32, 32, 16, 55, 16, 16);
+	//gameImage.TransparentBlt(dc, 0, 0, BOARD_SIZE_X, BOARD_SIZE_Y, 0, 0, 100, 100, RGB(0,0,0));
 };
 
 

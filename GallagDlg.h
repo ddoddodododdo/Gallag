@@ -4,6 +4,7 @@
 
 #pragma once
 #include <vector>
+#include <list>
 
 using namespace std;
 
@@ -15,7 +16,12 @@ public:
 	CGallagDlg(CWnd* pParent = nullptr);	// 표준 생성자입니다.
 	const int BOARD_SIZE_X = 600;
 	const int BOARD_SIZE_Y = 800;
-	int temp = 0;
+
+	class ObjMaker {
+	public:
+		int max;
+		int count = 0;
+	};
 
 	class GameObj {
 		public:
@@ -25,10 +31,11 @@ public:
 			double posY;
 			double sizeX;
 			double sizeY;
-			double velocityX;
-			double velocityY;
+			double velocityX = 0;
+			double velocityY = 0;
 			double speed = 1;
 			int hp;
+			ObjMaker bulletMaker ;
 	};
 
 	class InputKeyClass {
@@ -39,21 +46,16 @@ public:
 			bool isRight = false;
 	};
 
-	class ObjMaker {
-		public:
-			int max;
-			int count = 0;
-	};
 
 	CImage gameImage;
 
 	InputKeyClass InputKey;
 	GameObj player;
 
-	vector<GameObj> playerBullets;
 	vector<GameObj> enemys;
+	vector<GameObj> playerBullets;
+	list<GameObj> enemyBullets;
 
-	ObjMaker bulletMaker;
 	ObjMaker enemyMaker;
 
 
@@ -87,7 +89,4 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
-//	virtual void CalcWindowRect(LPRECT lpClientRect, UINT nAdjustType = adjustBorder);
-//	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
-//	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 };
