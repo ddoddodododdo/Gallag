@@ -8,6 +8,7 @@
 #include "GallagDlg.h"
 #include "afxdialogex.h"
 #include <vector>
+#include <math.h>
 
 using namespace std;
 
@@ -233,12 +234,18 @@ void CGallagDlg::OnPaint()
 
 void CGallagDlg::ControllPlayer() {
 	//Player Move
-	double moveX = (InputKey.isRight - InputKey.isLeft) * player.speed;
-	double moveY = (InputKey.isDown - InputKey.isUp) * player.speed;
+	double moveX = (InputKey.isRight - InputKey.isLeft);
+	double moveY = (InputKey.isDown - InputKey.isUp);
+	
 	if (player.posX + moveX > player.sizeX && player.posY + moveY> player.sizeY && player.posX + moveX < BOARD_SIZE_X - player.sizeX 
 		&& player.posY + moveY < BOARD_SIZE_Y - player.sizeX - 30) {
-		player.posX += moveX;
-		player.posY += moveY;
+		if (abs(moveX) + abs(moveY) >= 2) {
+			moveX *= 0.707;
+			moveY *= 0.707;
+		}
+
+		player.posX += moveX * player.speed;
+		player.posY += moveY * player.speed;
 	}
 
 
@@ -281,7 +288,11 @@ void CGallagDlg::ControllEnemy() {
 		//Make bullet
 		if (++iter->bulletMaker.count > iter->bulletMaker.max) {
 			GameObj bullet{ iter->posX, iter->posY};
-			bullet.velocityY = 10;
+			bullet.velocityX = (player.posX - bullet.posX);
+			bullet.velocityY = (player.posY - bullet.posY);
+			double sum = (abs(bullet.velocityX) + abs(bullet.velocityY)) * 0.1;
+			bullet.velocityX /= sum;
+			bullet.velocityY /= sum;
 
 			enemyBullets.push_back(bullet);
 			iter->bulletMaker.count = 0;
@@ -347,6 +358,9 @@ void CGallagDlg::Collision()
 		if (xFlag && yFlag) {
 			iter = enemyBullets.erase(iter);
 			player.hp--;
+			if (player.hp < 0) {
+				//게임오버
+			}
 		}
 		else
 			iter++;
