@@ -125,7 +125,8 @@ BOOL CGallagDlg::OnInitDialog()
 	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 
-	gameImage.Load(L"Galaga.png");
+	//gameImage.Load(L"Galaga.png");
+	gameImage.LoadFromResource(AfxGetInstanceHandle(), IDB_GAME);
 
 	//창 크기 조절
 	CRect rect;
