@@ -53,7 +53,7 @@ public:
 	GameObj player;
 
 	vector<GameObj> enemys;
-	vector<GameObj> playerBullets;
+	list<GameObj> playerBullets;
 	list<GameObj> enemyBullets;
 
 	ObjMaker enemyMaker;

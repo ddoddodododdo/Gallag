@@ -237,17 +237,19 @@ void CGallagDlg::ControllPlayer() {
 	//Player Move
 	double moveX = (InputKey.isRight - InputKey.isLeft);
 	double moveY = (InputKey.isDown - InputKey.isUp);
-	
-	if (player.posX + moveX > player.sizeX && player.posY + moveY> player.sizeY && player.posX + moveX < BOARD_SIZE_X - player.sizeX 
-		&& player.posY + moveY < BOARD_SIZE_Y - player.sizeX - 30) {
-		if (abs(moveX) + abs(moveY) >= 2) {
-			moveX *= 0.707;
-			moveY *= 0.707;
-		}
 
-		player.posX += moveX * player.speed;
-		player.posY += moveY * player.speed;
+	if (abs(moveX) + abs(moveY) >= 2) {
+		moveX *= 0.707;
+		moveY *= 0.707;
 	}
+
+	player.posX += moveX * player.speed;
+	player.posY += moveY * player.speed;
+
+	if (player.posX < 0) player.posX = 0;
+	else if (player.posX > BOARD_SIZE_X) player.posX = BOARD_SIZE_X;
+	if (player.posY < 0) player.posY = 0;
+	else if (player.posY > BOARD_SIZE_Y - 50) player.posY = BOARD_SIZE_Y - 50;
 
 
 	//Make Player Bullet
@@ -410,10 +412,14 @@ void CGallagDlg::DrawObject(CPaintDC& dc) {
 	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ	
 	//Draw Player Bullet
-	for (int i = 0; i < playerBullets.size(); i++) {
+	for (auto iter = playerBullets.begin(); iter != playerBullets.end(); iter++) {
+		gameImage.StretchBlt(dc, iter->posX - 4, iter->posY + 16
+			, 6, -16, 374, 51, 3, 8);
+	}
+	/*for (int i = 0; i < playerBullets.size(); i++) {
 		gameImage.StretchBlt(dc, playerBullets[i].posX - 4, playerBullets[i].posY + 16
 							, 6, -16, 374, 51, 3, 8);
-	}
+	}*/
 
 	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
