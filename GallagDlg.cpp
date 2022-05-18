@@ -7,8 +7,7 @@
 #include "Gallag.h"
 #include "GallagDlg.h"
 #include "afxdialogex.h"
-#include <vector>
-#include <math.h>
+
 
 using namespace std;
 
@@ -70,6 +69,7 @@ CGallagDlg::CGallagDlg(CWnd* pParent /*=nullptr*/)
 	
 
 	enemyMaker.max = 60;
+	srand((unsigned int)time(NULL));
 
 }
 
@@ -212,8 +212,8 @@ BOOL CGallagDlg::PreTranslateMessage(MSG* pMsg) {
 //  프레임워크에서 이 작업을 자동으로 수행합니다.
 
 bool CGallagDlg::IsInGameBoard(GameObj obj) {
-	bool flag1 = obj.posX > 0 && obj.posY > 0;
-	bool flag2 = obj.posX < BOARD_SIZE_X && obj.posY < BOARD_SIZE_Y - 40;
+	bool flag1 = obj.posX > -100 && obj.posY > -100;
+	bool flag2 = obj.posX < BOARD_SIZE_X + 100 && obj.posY < BOARD_SIZE_Y + 100;
 
 	return flag1 && flag2;
 }
@@ -279,9 +279,9 @@ void CGallagDlg::ControllPlayer() {
 void CGallagDlg::ControllEnemy() {
 	//Make Enemy
 	if (++enemyMaker.count > enemyMaker.max) {
-		GameObj enemy{BOARD_SIZE_X, 100, 20, 20, -5};
+		GameObj enemy{GetRandomX(), 0, 20, 20, 0, 5};
 		enemy.hp = 3;
-		enemy.bulletMaker.max = 10;
+		enemy.bulletMaker.max = 30;
 		enemys.push_back(enemy);
 		enemyMaker.count = 0;
 	}
@@ -294,8 +294,8 @@ void CGallagDlg::ControllEnemy() {
 			bullet.velocityX = (player.posX - bullet.posX);
 			bullet.velocityY = (player.posY - bullet.posY);
 			double sum = (abs(bullet.velocityX) + abs(bullet.velocityY)) * 0.1;
-			bullet.velocityX /= sum;
-			bullet.velocityY /= sum;
+			bullet.velocityX /= sum/2;
+			bullet.velocityY /= sum/2;
 
 			enemyBullets.push_back(bullet);
 			iter->bulletMaker.count = 0;
@@ -321,8 +321,8 @@ void CGallagDlg::ControllEnemy() {
 		else
 			iter++;
 	}
-
 }
+
 
 void CGallagDlg::Collision()
 {
@@ -353,10 +353,10 @@ void CGallagDlg::Collision()
 
 	//enemy bullet - player
 	for (auto iter = enemyBullets.begin(); iter != enemyBullets.end();) {
-		bool xFlag = (player.posX - player.sizeX <= iter->posX)
-					&& (iter->posX <= player.posX + player.sizeX);
-		bool yFlag = (player.posY - player.sizeY <= iter->posY)
-			&& (iter->posY <= player.posY + player.sizeY);
+		bool xFlag = (player.posX - player.sizeX*0.5 <= iter->posX)
+					&& (iter->posX <= player.posX + player.sizeX*0.5);
+		bool yFlag = (player.posY - player.sizeY*0.5 <= iter->posY)
+			&& (iter->posY <= player.posY + player.sizeY*0.5);
 
 		if (xFlag && yFlag) {
 			iter = enemyBullets.erase(iter);
@@ -389,7 +389,6 @@ void CGallagDlg::DrawObject(CPaintDC& dc) {
 		int sizeY = enemys[i].sizeY * 2;
 		gameImage.StretchBlt(dc, drawStartX, drawStartY + sizeY, enemys[i].sizeX * 2, -sizeY
 			, 16 + 24 * 6, 55 + 24 * 2, 16, 16);
-
 		
 	}
 
@@ -406,7 +405,7 @@ void CGallagDlg::DrawObject(CPaintDC& dc) {
 	//Draw Player
 	drawStartX = player.posX - player.sizeX;
 	drawStartY = player.posY - player.sizeY;
-	gameImage.StretchBlt(dc, drawStartX, drawStartY, player.sizeX*2, player.sizeY*2
+	gameImage.TransparentBlt(dc, drawStartX, drawStartY, player.sizeX*2, player.sizeY*2
 							, 16 + 24*6, 55, 16, 16);
 	
 	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
@@ -416,10 +415,6 @@ void CGallagDlg::DrawObject(CPaintDC& dc) {
 		gameImage.StretchBlt(dc, iter->posX - 4, iter->posY + 16
 			, 6, -16, 374, 51, 3, 8);
 	}
-	/*for (int i = 0; i < playerBullets.size(); i++) {
-		gameImage.StretchBlt(dc, playerBullets[i].posX - 4, playerBullets[i].posY + 16
-							, 6, -16, 374, 51, 3, 8);
-	}*/
 
 	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
@@ -434,7 +429,14 @@ void CGallagDlg::DrawObject(CPaintDC& dc) {
 	//이미지 간격 24(8 + 16), 이미지 크기(16, 16)
 	//gameImage.StretchBlt(dc, 32, 32, 32, 32, 16, 55, 16, 16);
 	//gameImage.TransparentBlt(dc, 0, 0, BOARD_SIZE_X, BOARD_SIZE_Y, 0, 0, 100, 100, RGB(0,0,0));
-};
+}
+double CGallagDlg::GetRandomX()
+{
+	
+	double num = rand() % (BOARD_SIZE_X - 50) + 50;
+	return num;
+}
+;
 
 
 

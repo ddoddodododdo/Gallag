@@ -5,6 +5,9 @@
 #pragma once
 #include <vector>
 #include <list>
+#include <math.h>
+#include <stdlib.h>
+#include <time.h>
 
 using namespace std;
 
@@ -78,6 +81,7 @@ protected:
 
 	void Collision();
 	void DrawObject(CPaintDC& dc);
+	double GetRandomX();
 
 	BOOL PreTranslateMessage(MSG* pMsg);
 
