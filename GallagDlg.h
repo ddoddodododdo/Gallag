@@ -28,8 +28,6 @@ public:
 
 	class GameObj {
 		public:
-
-		public:
 			double posX;
 			double posY;
 			double sizeX;
@@ -40,6 +38,13 @@ public:
 			int hp;
 			ObjMaker bulletMaker ;
 	};
+
+	class Enemy : public GameObj {
+		public:
+			int targetX;
+			int targetY;
+	};
+
 
 	class InputKeyClass {
 		public:
@@ -81,7 +86,8 @@ protected:
 
 	void Collision();
 	void DrawObject(CPaintDC& dc);
-	double GetRandomX();
+	double GetRandomX(int posY);
+	void SetVelocityFromTarget(GameObj *obj, int targetX, int targetY, double speed);
 
 	BOOL PreTranslateMessage(MSG* pMsg);
 

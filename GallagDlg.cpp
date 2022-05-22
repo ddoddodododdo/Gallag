@@ -8,7 +8,6 @@
 #include "GallagDlg.h"
 #include "afxdialogex.h"
 
-
 using namespace std;
 
 #ifdef _DEBUG
@@ -68,7 +67,7 @@ CGallagDlg::CGallagDlg(CWnd* pParent /*=nullptr*/)
 	player.bulletMaker.max = 3;
 	
 
-	enemyMaker.max = 60;
+	enemyMaker.max = 20;
 	srand((unsigned int)time(NULL));
 
 }
@@ -279,7 +278,13 @@ void CGallagDlg::ControllPlayer() {
 void CGallagDlg::ControllEnemy() {
 	//Make Enemy
 	if (++enemyMaker.count > enemyMaker.max) {
-		GameObj enemy{GetRandomX(), 0, 20, 20, 0, 5};
+		Enemy enemy;
+		enemy.posY = rand() % (int)(BOARD_SIZE_Y * 0.5) - 50;
+		enemy.posX = GetRandomX(enemy.posY);
+		enemy.sizeX = 20;
+		enemy.sizeY = 20;
+		SetVelocityFromTarget(&enemy, BOARD_SIZE_X * 0.5, BOARD_SIZE_Y * 0.25, 5);
+
 		enemy.hp = 3;
 		enemy.bulletMaker.max = 30;
 		enemys.push_back(enemy);
@@ -291,11 +296,13 @@ void CGallagDlg::ControllEnemy() {
 		//Make bullet
 		if (++iter->bulletMaker.count > iter->bulletMaker.max) {
 			GameObj bullet{ iter->posX, iter->posY};
-			bullet.velocityX = (player.posX - bullet.posX);
+
+			SetVelocityFromTarget(&bullet, player.posX, player.posY, 10);
+			/*bullet.velocityX = (player.posX - bullet.posX);
 			bullet.velocityY = (player.posY - bullet.posY);
-			double sum = (abs(bullet.velocityX) + abs(bullet.velocityY)) * 0.1;
-			bullet.velocityX /= sum/2;
-			bullet.velocityY /= sum/2;
+			int sum = (abs(bullet.velocityX) + abs(bullet.velocityY)) * 0.05;
+			bullet.velocityX /= sum;
+			bullet.velocityY /= sum;*/
 
 			enemyBullets.push_back(bullet);
 			iter->bulletMaker.count = 0;
@@ -323,6 +330,14 @@ void CGallagDlg::ControllEnemy() {
 	}
 }
 
+void CGallagDlg::SetVelocityFromTarget(GameObj *obj, int targetX, int targetY, double speed) {
+	obj->velocityX = targetX - obj->posX;
+	obj->velocityY = targetY - obj->posY;
+	
+	double sum = (abs(obj->velocityX) + abs(obj->velocityY)) / speed;
+	obj->velocityX /= sum;
+	obj->velocityY /= sum;
+}
 
 void CGallagDlg::Collision()
 {
@@ -387,9 +402,10 @@ void CGallagDlg::DrawObject(CPaintDC& dc) {
 		drawStartY = enemys[i].posY - enemys[i].sizeY;
 
 		int sizeY = enemys[i].sizeY * 2;
-		gameImage.StretchBlt(dc, drawStartX, drawStartY + sizeY, enemys[i].sizeX * 2, -sizeY
-			, 16 + 24 * 6, 55 + 24 * 2, 16, 16);
-		
+		/*gameImage.StretchBlt(dc, drawStartX, drawStartY + sizeY, enemys[i].sizeX * 2, -sizeY
+			, 16 + 24 * 6, 55 + 24 * 2, 16, 16);*/
+		gameImage.TransparentBlt(dc, drawStartX, drawStartY, enemys[i].sizeX * 2, sizeY
+			, 16 + 24 * 7, 55 + 24 * 2, 16, 16);
 	}
 
 	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
@@ -421,7 +437,7 @@ void CGallagDlg::DrawObject(CPaintDC& dc) {
 	//Draw Player Hp
 	for (int i = 0; i < player.hp; i++) {
 		gameImage.TransparentBlt(dc, player.sizeX * i * 2, BOARD_SIZE_Y - player.sizeY * 2 - 48, player.sizeX * 2, player.sizeY * 2
-			, 16 + 24 * 6, 55, 16, 16, RGB(0,0,0));
+			, 16 + 24 * 6, 55, 16, 16);
 	}
 
 
@@ -430,10 +446,12 @@ void CGallagDlg::DrawObject(CPaintDC& dc) {
 	//gameImage.StretchBlt(dc, 32, 32, 32, 32, 16, 55, 16, 16);
 	//gameImage.TransparentBlt(dc, 0, 0, BOARD_SIZE_X, BOARD_SIZE_Y, 0, 0, 100, 100, RGB(0,0,0));
 }
-double CGallagDlg::GetRandomX()
+double CGallagDlg::GetRandomX(int posY)
 {
-	
 	double num = rand() % (BOARD_SIZE_X - 50) + 50;
+	if (posY > 0)
+		num = num > BOARD_SIZE_X * 0.5 ? BOARD_SIZE_X + 50 : -50;
+
 	return num;
 }
 ;
