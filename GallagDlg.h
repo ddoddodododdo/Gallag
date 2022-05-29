@@ -7,6 +7,7 @@
 #include <list>
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 using namespace std;
@@ -19,6 +20,9 @@ public:
 	CGallagDlg(CWnd* pParent = nullptr);	// 표준 생성자입니다.
 	const int BOARD_SIZE_X = 600;
 	const int BOARD_SIZE_Y = 800;
+	int homeTextBlink = 0;
+	int gameScore = 0;
+	int bestScore = 0;
 
 	class ObjMaker {
 	public:
@@ -66,6 +70,8 @@ public:
 
 	ObjMaker enemyMaker;
 
+	enum GameState { Home, Play };
+	GameState nowGameState;
 
 // 대화 상자 데이터입니다.
 #ifdef AFX_DESIGN_TIME
@@ -80,12 +86,16 @@ protected:
 
 	// 생성된 메시지 맵 함수
 	bool IsInGameBoard(GameObj obj);
-
 	void ControllPlayer();
 	void ControllEnemy();
-
 	void Collision();
+
 	void DrawObject(CPaintDC& dc);
+	void DrawHome(CPaintDC& dc);
+	void DrawScore(CPaintDC& dc);
+
+	void GameStart();
+	void GameOver();
 	double GetRandomX(int posY);
 	void SetVelocityFromTarget(GameObj *obj, int targetX, int targetY, double speed);
 

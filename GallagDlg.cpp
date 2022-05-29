@@ -56,20 +56,9 @@ CGallagDlg::CGallagDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_GALLAG_DIALOG, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	nowGameState = GameState::Home;
 
-	player.posX = BOARD_SIZE_X * 0.5;
-	player.posY = BOARD_SIZE_Y * 0.8;
-	player.sizeX = 20;
-	player.sizeY = 20;
-	player.speed = 10;
-	player.hp = 3;
-
-	player.bulletMaker.max = 3;
-	
-
-	enemyMaker.max = 20;
 	srand((unsigned int)time(NULL));
-
 }
 
 void CGallagDlg::DoDataExchange(CDataExchange* pDX)
@@ -179,6 +168,12 @@ BOOL CGallagDlg::PreTranslateMessage(MSG* pMsg) {
 			default:
 				break;
 		}
+		if (pMsg->wParam == VK_RETURN) {
+			if (nowGameState == Home) {
+				GameStart();
+			}
+			return true;
+		}
 	}
 
 	if (pMsg->message == WM_KEYUP) {
@@ -202,7 +197,6 @@ BOOL CGallagDlg::PreTranslateMessage(MSG* pMsg) {
 	}
 
 
-
 	return CDialogEx::PreTranslateMessage(pMsg);
 }
 
@@ -220,15 +214,25 @@ bool CGallagDlg::IsInGameBoard(GameObj obj) {
 void CGallagDlg::OnPaint()
 {
 	CPaintDC dc(this);
+
+	//BackGround
+	gameImage.StretchBlt(dc, 0, 0, BOARD_SIZE_X, BOARD_SIZE_Y, 0, 0, 1, 1);
+
 	
-
-	ControllPlayer();
-	ControllEnemy();
-
-	Collision();
+	if (nowGameState == Home) {
+		DrawHome(dc);
+	}
+	else if (nowGameState == Play) {
+		ControllPlayer();
+		ControllEnemy();
+		Collision();
 	
+		DrawObject(dc);
+		DrawScore(dc);
 
-	DrawObject(dc);
+		gameScore++;
+	}
+
 	
 }
 
@@ -296,13 +300,7 @@ void CGallagDlg::ControllEnemy() {
 		//Make bullet
 		if (++iter->bulletMaker.count > iter->bulletMaker.max) {
 			GameObj bullet{ iter->posX, iter->posY};
-
 			SetVelocityFromTarget(&bullet, player.posX, player.posY, 10);
-			/*bullet.velocityX = (player.posX - bullet.posX);
-			bullet.velocityY = (player.posY - bullet.posY);
-			int sum = (abs(bullet.velocityX) + abs(bullet.velocityY)) * 0.05;
-			bullet.velocityX /= sum;
-			bullet.velocityY /= sum;*/
 
 			enemyBullets.push_back(bullet);
 			iter->bulletMaker.count = 0;
@@ -353,6 +351,7 @@ void CGallagDlg::Collision()
 				eIter->hp--;
 				if (eIter->hp <= 0) {
 					eIter = enemys.erase(eIter);
+					gameScore += 100;
 				}
 
 				bIter = playerBullets.erase(bIter);
@@ -377,7 +376,7 @@ void CGallagDlg::Collision()
 			iter = enemyBullets.erase(iter);
 			player.hp--;
 			if (player.hp < 0) {
-				//게임오버
+				GameOver();
 			}
 		}
 		else
@@ -387,10 +386,6 @@ void CGallagDlg::Collision()
 }
 
 void CGallagDlg::DrawObject(CPaintDC& dc) {
-	
-	//BackGround
-	gameImage.StretchBlt(dc, 0, 0, BOARD_SIZE_X, BOARD_SIZE_Y, 0, 0, 1, 1);
-
 	int drawStartX;
 	int drawStartY;
 
@@ -446,6 +441,59 @@ void CGallagDlg::DrawObject(CPaintDC& dc) {
 	//gameImage.StretchBlt(dc, 32, 32, 32, 32, 16, 55, 16, 16);
 	//gameImage.TransparentBlt(dc, 0, 0, BOARD_SIZE_X, BOARD_SIZE_Y, 0, 0, 100, 100, RGB(0,0,0));
 }
+void CGallagDlg::DrawHome(CPaintDC& dc)
+{
+	homeTextBlink++;
+	if (homeTextBlink < 10) {
+		dc.SetBkMode(TRANSPARENT);
+		dc.SetTextColor(RGB(255, 255, 255));
+		dc.SetTextAlign(TA_CENTER);
+		dc.TextOutW(BOARD_SIZE_X * 0.5, BOARD_SIZE_Y * 0.75, _T("Press Enter Key To Start"));
+	}
+
+	if (homeTextBlink >= 20) 
+		homeTextBlink = 0;
+}
+
+void CGallagDlg::DrawScore(CPaintDC& dc)
+{
+	dc.SetBkMode(TRANSPARENT);
+	dc.SetTextColor(RGB(255, 255, 255));
+	dc.SetTextAlign(TA_LEFT);
+	dc.TextOutW(0, 0, _T("Score"));
+	
+	CString gameScoreStr;
+	gameScoreStr.Format(_T("%d"), gameScore);
+	dc.TextOutW(0, 15, gameScoreStr);
+}
+
+void CGallagDlg::GameStart()
+{
+	nowGameState = Play;
+	
+	player.posX = BOARD_SIZE_X * 0.5;
+	player.posY = BOARD_SIZE_Y * 0.8;
+	player.sizeX = 20;
+	player.sizeY = 20;
+	player.speed = 10;
+	player.hp = 3;
+	player.bulletMaker.max = 3;
+
+	enemyMaker.max = 20;
+
+	vector<GameObj>().swap(enemys);
+	list<GameObj>().swap(playerBullets);
+	list<GameObj>().swap(enemyBullets);
+
+}
+void CGallagDlg::GameOver()
+{
+	nowGameState = Home;
+
+	gameScore = 0;
+}
+
+
 double CGallagDlg::GetRandomX(int posY)
 {
 	double num = rand() % (BOARD_SIZE_X - 50) + 50;
