@@ -183,16 +183,22 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Enemy.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Gallag.h" />
     <ClInclude Include="GallagDlg.h" />
+    <ClInclude Include="GameObj.h" />
+    <ClInclude Include="ObjMaker.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Gallag.cpp" />
     <ClCompile Include="GallagDlg.cpp" />
+    <ClCompile Include="GameObj.cpp" />
+    <ClCompile Include="ObjMaker.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

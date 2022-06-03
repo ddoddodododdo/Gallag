@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include "GameObj.h"
+#include "Enemy.h"
 
 using namespace std;
 
@@ -24,30 +26,6 @@ public:
 	int gameScore = 0;
 	int bestScore = 0;
 
-	class ObjMaker {
-	public:
-		int max;
-		int count = 0;
-	};
-
-	class GameObj {
-		public:
-			double posX;
-			double posY;
-			double sizeX;
-			double sizeY;
-			double velocityX = 0;
-			double velocityY = 0;
-			double speed = 1;
-			int hp;
-			ObjMaker bulletMaker ;
-	};
-
-	class Enemy : public GameObj {
-		public:
-			int targetX;
-			int targetY;
-	};
 
 
 	class InputKeyClass {
@@ -96,7 +74,6 @@ protected:
 
 	void GameStart();
 	void GameOver();
-	double GetRandomX(int posY);
 	void SetVelocityFromTarget(GameObj *obj, int targetX, int targetY, double speed);
 
 	BOOL PreTranslateMessage(MSG* pMsg);

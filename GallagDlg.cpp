@@ -266,14 +266,11 @@ void CGallagDlg::ControllPlayer() {
 
 	//Player Bullet Move
 	for (auto iter = playerBullets.begin(); iter != playerBullets.end();) {
-		iter->posY += iter->velocityX;
-		iter->posY += iter->velocityY;
-
-		if (!IsInGameBoard(*iter)) {
+		if (iter->Move()) 
 			iter = playerBullets.erase(iter);
-		}
-		else 
+		else
 			iter++;
+
 	}
 
 }
@@ -283,14 +280,8 @@ void CGallagDlg::ControllEnemy() {
 	//Make Enemy
 	if (++enemyMaker.count > enemyMaker.max) {
 		Enemy enemy;
-		enemy.posY = rand() % (int)(BOARD_SIZE_Y * 0.5) - 50;
-		enemy.posX = GetRandomX(enemy.posY);
-		enemy.sizeX = 20;
-		enemy.sizeY = 20;
 		SetVelocityFromTarget(&enemy, BOARD_SIZE_X * 0.5, BOARD_SIZE_Y * 0.25, 5);
 
-		enemy.hp = 3;
-		enemy.bulletMaker.max = 30;
 		enemys.push_back(enemy);
 		enemyMaker.count = 0;
 	}
@@ -307,24 +298,19 @@ void CGallagDlg::ControllEnemy() {
 		}
 
 		//Move Enemy
-		iter->posX += iter->velocityX;
-		iter->posY += iter->velocityY;
-		if (!IsInGameBoard(*iter)) {
+		if (iter->Move())
 			iter = enemys.erase(iter);
-		}
-		else 
+		else
 			iter++;
 	}
 
 	//Move Enemy Bullet
 	for (auto iter = enemyBullets.begin(); iter != enemyBullets.end();) {
-		iter->posX += iter->velocityX;
-		iter->posY += iter->velocityY;
-
-		if (!IsInGameBoard(*iter))
+		if (iter->Move())
 			iter = enemyBullets.erase(iter);
 		else
 			iter++;
+
 	}
 }
 
@@ -386,49 +372,26 @@ void CGallagDlg::Collision()
 }
 
 void CGallagDlg::DrawObject(CPaintDC& dc) {
-	int drawStartX;
-	int drawStartY;
-
-	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
-	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 	//DrawEnemy
 	for (int i = 0; i < enemys.size(); i++) {
-		drawStartX = enemys[i].posX - enemys[i].sizeX;
-		drawStartY = enemys[i].posY - enemys[i].sizeY;
-
-		int sizeY = enemys[i].sizeY * 2;
-		/*gameImage.StretchBlt(dc, drawStartX, drawStartY + sizeY, enemys[i].sizeX * 2, -sizeY
-			, 16 + 24 * 6, 55 + 24 * 2, 16, 16);*/
-		gameImage.TransparentBlt(dc, drawStartX, drawStartY, enemys[i].sizeX * 2, sizeY
-			, 16 + 24 * 7, 55 + 24 * 2, 16, 16, RGB(0, 0, 0));
+		enemys[i].DrawObject(dc, &gameImage, GameObj::DrawType::ENEMY1);
 	}
 
-	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
-	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 	//DrawEnemyBullets
 	for (auto iter = enemyBullets.begin(); iter != enemyBullets.end(); iter++) {
 		dc.Ellipse(iter->posX + 3, iter->posY + 3, iter->posX - 3, iter->posY - 3);
-
 	}
 
-	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
-	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 	//Draw Player
-	drawStartX = player.posX - player.sizeX;
-	drawStartY = player.posY - player.sizeY;
-	gameImage.TransparentBlt(dc, drawStartX, drawStartY, player.sizeX*2, player.sizeY*2
-							, 16 + 24*6, 55, 16, 16, RGB(0, 0, 0));
+	player.DrawObject(dc, &gameImage, GameObj::DrawType::PLAYER1);
 	
-	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
-	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ	
+
 	//Draw Player Bullet
 	for (auto iter = playerBullets.begin(); iter != playerBullets.end(); iter++) {
 		gameImage.StretchBlt(dc, iter->posX - 4, iter->posY + 16
 			, 6, -16, 374, 51, 3, 8);
 	}
 
-	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
-	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 	//Draw Player Hp
 	for (int i = 0; i < player.hp; i++) {
 		gameImage.TransparentBlt(dc, player.sizeX * i * 2, BOARD_SIZE_Y - player.sizeY * 2 - 48, player.sizeX * 2, player.sizeY * 2
@@ -492,18 +455,6 @@ void CGallagDlg::GameOver()
 
 	gameScore = 0;
 }
-
-
-double CGallagDlg::GetRandomX(int posY)
-{
-	double num = rand() % (BOARD_SIZE_X - 50) + 50;
-	if (posY > 0)
-		num = num > BOARD_SIZE_X * 0.5 ? BOARD_SIZE_X + 50 : -50;
-
-	return num;
-}
-;
-
 
 
 HCURSOR CGallagDlg::OnQueryDragIcon()
