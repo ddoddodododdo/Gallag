@@ -1,27 +1,2 @@
 ﻿  Enemy.cpp
-  Gallag.cpp
-  GallagDlg.cpp
-D:\school\project\Gallag\GallagDlg.cpp(283,66): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\school\project\Gallag\GallagDlg.cpp(283,46): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\school\project\Gallag\GallagDlg.cpp(294,54): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\school\project\Gallag\GallagDlg.cpp(294,41): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\school\project\Gallag\GallagDlg.cpp(376,20): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-D:\school\project\Gallag\GallagDlg.cpp(382,73): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\school\project\Gallag\GallagDlg.cpp(382,57): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\school\project\Gallag\GallagDlg.cpp(382,41): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\school\project\Gallag\GallagDlg.cpp(382,25): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\school\project\Gallag\GallagDlg.cpp(391,55): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\school\project\Gallag\GallagDlg.cpp(391,39): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\school\project\Gallag\GallagDlg.cpp(397,123): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\school\project\Gallag\GallagDlg.cpp(397,105): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\school\project\Gallag\GallagDlg.cpp(397,86): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\school\project\Gallag\GallagDlg.cpp(397,49): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\school\project\Gallag\GallagDlg.cpp(414,48): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\school\project\Gallag\GallagDlg.cpp(414,28): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-  GameObj.cpp
-D:\school\project\Gallag\GameObj.cpp(28,17): warning C4244: '초기화 중': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\school\project\Gallag\GameObj.cpp(29,17): warning C4244: '초기화 중': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\school\project\Gallag\GameObj.cpp(31,73): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\school\project\Gallag\GameObj.cpp(31,62): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-  코드를 생성하고 있습니다...
   Gallag.vcxproj -> D:\school\project\Gallag\Debug\Gallag.exe

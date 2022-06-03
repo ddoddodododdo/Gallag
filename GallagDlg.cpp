@@ -150,52 +150,14 @@ void CGallagDlg::OnTimer(UINT_PTR nIDEvent)
 BOOL CGallagDlg::PreTranslateMessage(MSG* pMsg) {
 	//AfxMessageBox(TEXT("눌림"));
 
-	if (pMsg->message == WM_KEYDOWN) {
-		switch (pMsg->wParam)
-		{
-			case VK_LEFT:
-				InputKey.isLeft = true;
-				break;
-			case VK_RIGHT:
-				InputKey.isRight = true;
-				break;
-			case VK_UP:
-				InputKey.isUp = true;
-				break;
-			case VK_DOWN:
-				InputKey.isDown = true;
-				break;
-			default:
-				break;
-		}
-		if (pMsg->wParam == VK_RETURN) {
-			if (nowGameState == Home) {
-				GameStart();
-			}
-			return true;
-		}
-	}
+	inputKey.SetInputInfo(pMsg);
 
-	if (pMsg->message == WM_KEYUP) {
-		switch (pMsg->wParam)
-		{
-			case VK_LEFT:
-				InputKey.isLeft = false;
-				break;
-			case VK_RIGHT:
-				InputKey.isRight = false;
-				break;
-			case VK_UP:
-				InputKey.isUp = false;
-				break;
-			case VK_DOWN:
-				InputKey.isDown = false;
-				break;
-			default:
-				break;
+	if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN) {
+		if (nowGameState == Home) {
+			GameStart();
 		}
+		return true;
 	}
-
 
 	return CDialogEx::PreTranslateMessage(pMsg);
 }
@@ -204,12 +166,6 @@ BOOL CGallagDlg::PreTranslateMessage(MSG* pMsg) {
 //  아래 코드가 필요합니다.  문서/뷰 모델을 사용하는 MFC 애플리케이션의 경우에는
 //  프레임워크에서 이 작업을 자동으로 수행합니다.
 
-bool CGallagDlg::IsInGameBoard(GameObj obj) {
-	bool flag1 = obj.posX > -100 && obj.posY > -100;
-	bool flag2 = obj.posX < BOARD_SIZE_X + 100 && obj.posY < BOARD_SIZE_Y + 100;
-
-	return flag1 && flag2;
-}
 
 void CGallagDlg::OnPaint()
 {
@@ -238,8 +194,8 @@ void CGallagDlg::OnPaint()
 
 void CGallagDlg::ControllPlayer() {
 	//Player Move
-	double moveX = (InputKey.isRight - InputKey.isLeft);
-	double moveY = (InputKey.isDown - InputKey.isUp);
+	double moveX = (inputKey.isRight - inputKey.isLeft);
+	double moveY = (inputKey.isDown - inputKey.isUp);
 
 	if (abs(moveX) + abs(moveY) >= 2) {
 		moveX *= 0.707;
@@ -257,8 +213,7 @@ void CGallagDlg::ControllPlayer() {
 
 	//Make Player Bullet
 	if (++player.bulletMaker.count > player.bulletMaker.max) {
-		GameObj bullet{ player.posX, player.posY, 0, 10};
-		bullet.velocityX = 0;
+		GameObj bullet{ player.posX, player.posY};
 		bullet.velocityY = -20;
 		playerBullets.push_back(bullet);
 		player.bulletMaker.count = 0;
@@ -280,8 +235,7 @@ void CGallagDlg::ControllEnemy() {
 	//Make Enemy
 	if (++enemyMaker.count > enemyMaker.max) {
 		Enemy enemy;
-		SetVelocityFromTarget(&enemy, BOARD_SIZE_X * 0.5, BOARD_SIZE_Y * 0.25, 5);
-
+		enemy.SetVelocityFromTarget(BOARD_SIZE_X * 0.5, BOARD_SIZE_Y * 0.25);
 		enemys.push_back(enemy);
 		enemyMaker.count = 0;
 	}
@@ -291,7 +245,8 @@ void CGallagDlg::ControllEnemy() {
 		//Make bullet
 		if (++iter->bulletMaker.count > iter->bulletMaker.max) {
 			GameObj bullet{ iter->posX, iter->posY};
-			SetVelocityFromTarget(&bullet, player.posX, player.posY, 10);
+			bullet.speed = 10;
+			bullet.SetVelocityFromTarget(player.posX, player.posY);
 
 			enemyBullets.push_back(bullet);
 			iter->bulletMaker.count = 0;
@@ -314,32 +269,16 @@ void CGallagDlg::ControllEnemy() {
 	}
 }
 
-void CGallagDlg::SetVelocityFromTarget(GameObj *obj, int targetX, int targetY, double speed) {
-	obj->velocityX = targetX - obj->posX;
-	obj->velocityY = targetY - obj->posY;
-	
-	double sum = (abs(obj->velocityX) + abs(obj->velocityY)) / speed;
-	obj->velocityX /= sum;
-	obj->velocityY /= sum;
-}
-
 void CGallagDlg::Collision()
 {
 	//player bullet ㅡ enemy
 	for (auto bIter = playerBullets.begin(); bIter != playerBullets.end();) {
 		for (auto eIter = enemys.begin(); eIter != enemys.end();) {
-			bool xFlag = (eIter->posX - eIter->sizeX) <= bIter->posX
-						&& bIter->posX <= (eIter->posX + eIter->sizeX);
-			bool yFlag = (eIter->posY - eIter->sizeY) <= bIter->posY
-						&& bIter->posY <= (eIter->posY + eIter->sizeY);
-			if (xFlag && yFlag) {
-
-				eIter->hp--;
+			if (eIter->CheckCollision(*bIter)) {
 				if (eIter->hp <= 0) {
 					eIter = enemys.erase(eIter);
 					gameScore += 100;
 				}
-
 				bIter = playerBullets.erase(bIter);
 				goto doubleBreak;
 			}
@@ -353,14 +292,8 @@ void CGallagDlg::Collision()
 
 	//enemy bullet - player
 	for (auto iter = enemyBullets.begin(); iter != enemyBullets.end();) {
-		bool xFlag = (player.posX - player.sizeX*0.5 <= iter->posX)
-					&& (iter->posX <= player.posX + player.sizeX*0.5);
-		bool yFlag = (player.posY - player.sizeY*0.5 <= iter->posY)
-			&& (iter->posY <= player.posY + player.sizeY*0.5);
-
-		if (xFlag && yFlag) {
+		if (player.CheckCollision(*iter, 0.5)) {
 			iter = enemyBullets.erase(iter);
-			player.hp--;
 			if (player.hp < 0) {
 				GameOver();
 			}
@@ -385,7 +318,6 @@ void CGallagDlg::DrawObject(CPaintDC& dc) {
 	//Draw Player
 	player.DrawObject(dc, &gameImage, GameObj::DrawType::PLAYER1);
 	
-
 	//Draw Player Bullet
 	for (auto iter = playerBullets.begin(); iter != playerBullets.end(); iter++) {
 		gameImage.StretchBlt(dc, iter->posX - 4, iter->posY + 16
@@ -444,7 +376,7 @@ void CGallagDlg::GameStart()
 
 	enemyMaker.max = 20;
 
-	vector<GameObj>().swap(enemys);
+	vector<Enemy>().swap(enemys);
 	list<GameObj>().swap(playerBullets);
 	list<GameObj>().swap(enemyBullets);
 

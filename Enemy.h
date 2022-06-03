@@ -9,5 +9,6 @@ class Enemy : public GameObj
 		int targetX = 0;
 		int targetY = 0;
 
+		void DrawObject(CDC& dc, CImage* gameImage, GameObj::DrawType type);
 };
 

@@ -22,6 +22,9 @@ class GameObj
 		//false면 게임판 밖
 		bool IsInGameBoard();
 		bool CheckCollision(GameObj target);
+		bool CheckCollision(GameObj target, double sizePer);
+		void SetVelocityFromTarget(int targetX, int targetY);
+
 
 		enum DrawType {
 			PLAYER1, 
@@ -32,6 +35,6 @@ class GameObj
 			ENEMY4
 		};
 
-		void DrawObject(CDC& dc, CImage* gameImage, DrawType type);
+		void DrawObject(CDC& dc, CImage* gameImage, GameObj::DrawType type);
 };
 

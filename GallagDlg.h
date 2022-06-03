@@ -11,6 +11,7 @@
 #include <time.h>
 #include "GameObj.h"
 #include "Enemy.h"
+#include "InputKey.h"
 
 using namespace std;
 
@@ -26,23 +27,12 @@ public:
 	int gameScore = 0;
 	int bestScore = 0;
 
-
-
-	class InputKeyClass {
-		public:
-			bool isUp = false;
-			bool isDown = false;
-			bool isLeft = false;
-			bool isRight = false;
-	};
-
-
 	CImage gameImage;
 
-	InputKeyClass InputKey;
+	InputKey inputKey;
 	GameObj player;
 
-	vector<GameObj> enemys;
+	vector<Enemy> enemys;
 	list<GameObj> playerBullets;
 	list<GameObj> enemyBullets;
 
@@ -63,7 +53,6 @@ protected:
 	HICON m_hIcon;
 
 	// 생성된 메시지 맵 함수
-	bool IsInGameBoard(GameObj obj);
 	void ControllPlayer();
 	void ControllEnemy();
 	void Collision();
@@ -74,7 +63,6 @@ protected:
 
 	void GameStart();
 	void GameOver();
-	void SetVelocityFromTarget(GameObj *obj, int targetX, int targetY, double speed);
 
 	BOOL PreTranslateMessage(MSG* pMsg);
 
