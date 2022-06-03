@@ -31,3 +31,8 @@
 *.exe
 *.out
 *.app
+
+#Folder
+.vs/
+Debug/
+Release/

@@ -400,7 +400,7 @@ void CGallagDlg::DrawObject(CPaintDC& dc) {
 		/*gameImage.StretchBlt(dc, drawStartX, drawStartY + sizeY, enemys[i].sizeX * 2, -sizeY
 			, 16 + 24 * 6, 55 + 24 * 2, 16, 16);*/
 		gameImage.TransparentBlt(dc, drawStartX, drawStartY, enemys[i].sizeX * 2, sizeY
-			, 16 + 24 * 7, 55 + 24 * 2, 16, 16);
+			, 16 + 24 * 7, 55 + 24 * 2, 16, 16, RGB(0, 0, 0));
 	}
 
 	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
@@ -417,7 +417,7 @@ void CGallagDlg::DrawObject(CPaintDC& dc) {
 	drawStartX = player.posX - player.sizeX;
 	drawStartY = player.posY - player.sizeY;
 	gameImage.TransparentBlt(dc, drawStartX, drawStartY, player.sizeX*2, player.sizeY*2
-							, 16 + 24*6, 55, 16, 16);
+							, 16 + 24*6, 55, 16, 16, RGB(0, 0, 0));
 	
 	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ	
@@ -432,7 +432,7 @@ void CGallagDlg::DrawObject(CPaintDC& dc) {
 	//Draw Player Hp
 	for (int i = 0; i < player.hp; i++) {
 		gameImage.TransparentBlt(dc, player.sizeX * i * 2, BOARD_SIZE_Y - player.sizeY * 2 - 48, player.sizeX * 2, player.sizeY * 2
-			, 16 + 24 * 6, 55, 16, 16);
+			, 16 + 24 * 6, 55, 16, 16, RGB(0, 0, 0));
 	}
 
 
