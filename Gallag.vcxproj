@@ -184,6 +184,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="Enemy2.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Gallag.h" />
     <ClInclude Include="GallagDlg.h" />
@@ -196,6 +197,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="Enemy2.cpp" />
     <ClCompile Include="Gallag.cpp" />
     <ClCompile Include="GallagDlg.cpp" />
     <ClCompile Include="GameObj.cpp" />

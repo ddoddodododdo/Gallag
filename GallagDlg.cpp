@@ -212,11 +212,10 @@ void CGallagDlg::ControllPlayer() {
 
 
 	//Make Player Bullet
-	if (++player.bulletMaker.count > player.bulletMaker.max) {
-		GameObj bullet{ player.posX, player.posY};
+	if (player.bulletMaker.CanMake()) {
+		GameObj bullet{ player.posX, player.posY };
 		bullet.velocityY = -20;
 		playerBullets.push_back(bullet);
-		player.bulletMaker.count = 0;
 	}
 
 	//Player Bullet Move
@@ -233,23 +232,20 @@ void CGallagDlg::ControllPlayer() {
 
 void CGallagDlg::ControllEnemy() {
 	//Make Enemy
-	if (++enemyMaker.count > enemyMaker.max) {
+	if (enemyMaker.CanMake()) {
 		Enemy enemy;
 		enemy.SetVelocityFromTarget(BOARD_SIZE_X * 0.5, BOARD_SIZE_Y * 0.25);
 		enemys.push_back(enemy);
-		enemyMaker.count = 0;
 	}
 
 	//Enemy Move & Make bullet
 	for (auto iter = enemys.begin(); iter != enemys.end();) {
 		//Make bullet
-		if (++iter->bulletMaker.count > iter->bulletMaker.max) {
+		if (iter->bulletMaker.CanMake()) {
 			GameObj bullet{ iter->posX, iter->posY};
 			bullet.speed = 10;
 			bullet.SetVelocityFromTarget(player.posX, player.posY);
-
 			enemyBullets.push_back(bullet);
-			iter->bulletMaker.count = 0;
 		}
 
 		//Move Enemy
@@ -374,7 +370,7 @@ void CGallagDlg::GameStart()
 	player.hp = 3;
 	player.bulletMaker.max = 3;
 
-	enemyMaker.max = 20;
+	enemyMaker.max = 30;
 
 	vector<Enemy>().swap(enemys);
 	list<GameObj>().swap(playerBullets);
