@@ -120,9 +120,10 @@ BOOL CGallagDlg::OnInitDialog()
 	MoveWindow(rect.left, rect.top, BOARD_SIZE_X, BOARD_SIZE_Y);
 
 	CFile file;
-	file.Open(_T("score.txt"), CFile::modeRead);;
-	file.Read(&bestScore, sizeof(bestScore));
-	file.Close();
+	if (file.Open(_T("score.txt"), CFile::modeRead)) {
+		file.Read(&bestScore, sizeof(bestScore));
+		file.Close();
+	}
 
 	SetTimer(1000, 1000 / 30, NULL);
 
