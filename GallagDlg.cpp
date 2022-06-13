@@ -110,8 +110,6 @@ BOOL CGallagDlg::OnInitDialog()
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
 	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
-	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
-	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 
 	//gameImage.Load(L"Galaga.png");
 	gameImage.LoadFromResource(AfxGetInstanceHandle(), IDB_GAME);
@@ -121,6 +119,10 @@ BOOL CGallagDlg::OnInitDialog()
 	GetWindowRect(&rect);
 	MoveWindow(rect.left, rect.top, BOARD_SIZE_X, BOARD_SIZE_Y);
 
+	CFile file;
+	file.Open(_T("score.txt"), CFile::modeRead);;
+	file.Read(&bestScore, sizeof(bestScore));
+	file.Close();
 
 	SetTimer(1000, 1000 / 30, NULL);
 
@@ -194,21 +196,7 @@ void CGallagDlg::OnPaint()
 
 void CGallagDlg::ControllPlayer() {
 	//Player Move
-	double moveX = (inputKey.isRight - inputKey.isLeft);
-	double moveY = (inputKey.isDown - inputKey.isUp);
-
-	if (abs(moveX) + abs(moveY) >= 2) {
-		moveX *= 0.707;
-		moveY *= 0.707;
-	}
-
-	player.posX += moveX * player.speed;
-	player.posY += moveY * player.speed;
-
-	if (player.posX < 0) player.posX = 0;
-	else if (player.posX > BOARD_SIZE_X) player.posX = BOARD_SIZE_X;
-	if (player.posY < 0) player.posY = 0;
-	else if (player.posY > BOARD_SIZE_Y - 50) player.posY = BOARD_SIZE_Y - 50;
+	player.Move(inputKey);
 
 
 	//Make Player Bullet
@@ -224,7 +212,6 @@ void CGallagDlg::ControllPlayer() {
 			iter = playerBullets.erase(iter);
 		else
 			iter++;
-
 	}
 
 }
@@ -356,19 +343,19 @@ void CGallagDlg::DrawScore(CPaintDC& dc)
 	CString gameScoreStr;
 	gameScoreStr.Format(_T("%d"), gameScore);
 	dc.TextOutW(0, 15, gameScoreStr);
+
+	dc.SetTextAlign(TA_RIGHT);
+	dc.TextOutW(BOARD_SIZE_X-20, 0, _T("BestScore"));
+	gameScoreStr.Format(_T("%d"), bestScore);
+	dc.TextOutW(BOARD_SIZE_X-20, 15, gameScoreStr);
+
 }
 
 void CGallagDlg::GameStart()
 {
 	nowGameState = Play;
 	
-	player.posX = BOARD_SIZE_X * 0.5;
-	player.posY = BOARD_SIZE_Y * 0.8;
-	player.sizeX = 20;
-	player.sizeY = 20;
-	player.speed = 10;
-	player.hp = 3;
-	player.bulletMaker.max = 3;
+	player.Reset();
 
 	enemyMaker.max = 30;
 
@@ -381,6 +368,15 @@ void CGallagDlg::GameOver()
 {
 	nowGameState = Home;
 
+	if (bestScore < gameScore) {
+		bestScore = gameScore;
+
+		CFile file;
+		file.Open(_T("score.txt"), CFile::modeCreate | CFile::modeWrite, NULL);
+		file.Write(&bestScore, sizeof(bestScore));
+
+		file.Close();
+	}
 	gameScore = 0;
 }
 

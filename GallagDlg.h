@@ -12,6 +12,7 @@
 #include "GameObj.h"
 #include "Enemy.h"
 #include "InputKey.h"
+#include "Player.h"
 
 using namespace std;
 
@@ -30,7 +31,7 @@ public:
 	CImage gameImage;
 
 	InputKey inputKey;
-	GameObj player;
+	Player player;
 
 	vector<Enemy> enemys;
 	list<GameObj> playerBullets;
