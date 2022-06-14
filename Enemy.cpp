@@ -9,8 +9,11 @@ Enemy::Enemy() {
 	speed = 5;
 	hp = 2;
 	bulletMaker.max = 30;
+	bulletMaker.count = rand() % 25;
 
 }
+
+
 
 double Enemy::GetRandomX()
 {
@@ -19,6 +22,18 @@ double Enemy::GetRandomX()
 		num = num > BOARD_SIZE_X * 0.5 ? BOARD_SIZE_X + 50 : -50;
 
 	return num;
+}
+
+bool Enemy::Move()
+{
+	/*if (bulletMaker.count < 3) {
+		return false;
+	}*/
+
+	posX += velocityX;
+	posY += velocityY;
+
+	return !IsInGameBoard();
 }
 
 void Enemy::DrawObject(CDC& dc, CImage* gameImage, GameObj::DrawType type)

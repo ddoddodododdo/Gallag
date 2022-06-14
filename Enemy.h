@@ -9,6 +9,7 @@ class Enemy : public GameObj
 		int targetY = 0;
 
 		double GetRandomX();
+		bool Move();
 		void DrawObject(CDC& dc, CImage* gameImage, GameObj::DrawType type);
 };
 
