@@ -11,6 +11,7 @@ void Player::Reset()
 	speed = 10;
 	hp = 3;
 	bulletMaker.max = 3;
+	itemTime = 0;
 }
 
 void Player::Move(InputKey input)
@@ -30,4 +31,14 @@ void Player::Move(InputKey input)
 	else if (posX > BOARD_SIZE_X) posX = BOARD_SIZE_X;
 	if (posY < 0) posY = 0;
 	else if (posY > BOARD_SIZE_Y - 50) posY = BOARD_SIZE_Y - 50;
+
+	itemTime = itemTime > 0 ? itemTime-- : 0;
 }
+
+void Player::CheckGetItem(GameObj* item)
+{
+
+
+}
+
+

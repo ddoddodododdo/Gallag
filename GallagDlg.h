@@ -11,6 +11,7 @@
 #include <time.h>
 #include "GameObj.h"
 #include "Enemy.h"
+#include "Enemy2.h"
 #include "InputKey.h"
 #include "Player.h"
 
@@ -33,11 +34,15 @@ public:
 	InputKey inputKey;
 	Player player;
 
-	vector<Enemy> enemys;
+	list<Enemy> enemys1;
+	list<Enemy2> enemys2;
 	list<GameObj> playerBullets;
 	list<GameObj> enemyBullets;
+	list<GameObj> items;
 
+	ObjMaker itemMaker;
 	ObjMaker enemyMaker;
+	ObjMaker enemy2Maker;
 
 	enum GameState { Home, Play };
 	GameState nowGameState;
@@ -56,6 +61,7 @@ protected:
 	// 생성된 메시지 맵 함수
 	void ControllPlayer();
 	void ControllEnemy();
+	void ControllItem();
 	void Collision();
 
 	void DrawObject(CPaintDC& dc);

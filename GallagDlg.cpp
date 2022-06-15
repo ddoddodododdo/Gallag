@@ -199,7 +199,6 @@ void CGallagDlg::ControllPlayer() {
 	//Player Move
 	player.Move(inputKey);
 
-
 	//Make Player Bullet
 	if (player.bulletMaker.CanMake()) {
 		GameObj bullet{ player.posX, player.posY };
@@ -223,14 +222,19 @@ void CGallagDlg::ControllEnemy() {
 	if (enemyMaker.CanMake()) {
 		Enemy enemy;
 		enemy.SetVelocityFromTarget(BOARD_SIZE_X * 0.5, BOARD_SIZE_Y * 0.25);
-		enemys.push_back(enemy);
+		enemys1.push_back(enemy);
+	}
+	if (enemy2Maker.CanMake()) {
+		Enemy2 enemy;
+		enemy.SetVelocityFromTarget(BOARD_SIZE_X * 0.5, BOARD_SIZE_Y * 0.25);
+		enemys2.push_back(enemy);
 	}
 
-	//Enemy Move & Make bullet
-	for (auto iter = enemys.begin(); iter != enemys.end();) {
+	//Ememy1
+	for (auto iter = enemys1.begin(); iter != enemys1.end();) {
 		//Make bullet
 		if (iter->bulletMaker.CanMake()) {
-			GameObj bullet{ iter->posX, iter->posY};
+			GameObj bullet{ iter->posX, iter->posY };
 			bullet.speed = 10;
 			bullet.SetVelocityFromTarget(player.posX, player.posY);
 			enemyBullets.push_back(bullet);
@@ -238,7 +242,24 @@ void CGallagDlg::ControllEnemy() {
 
 		//Move Enemy
 		if (iter->Move())
-			iter = enemys.erase(iter);
+			iter = enemys1.erase(iter);
+		else
+			iter++;
+	}
+
+	//Enemy2
+	for (auto iter = enemys2.begin(); iter != enemys2.end();) {
+		//Make bullet
+		if (iter->bulletMaker.CanMake()) {
+			GameObj bullet{ iter->posX, iter->posY };
+			bullet.speed = 30;
+			bullet.SetVelocityFromTarget(player.posX, player.posY);
+			enemyBullets.push_back(bullet);
+		}
+
+		//Move Enemy
+		if (iter->Move())
+			iter = enemys2.erase(iter);
 		else
 			iter++;
 	}
@@ -253,24 +274,54 @@ void CGallagDlg::ControllEnemy() {
 	}
 }
 
+void CGallagDlg::ControllItem()
+{
+	for (auto iter = items.begin(); iter != items.end();) {
+
+		if (iter->Move())
+			iter = items.erase(iter);
+		else
+			iter++;
+	}
+}
+
+
 void CGallagDlg::Collision()
 {
 	//player bullet ㅡ enemy
 	for (auto bIter = playerBullets.begin(); bIter != playerBullets.end();) {
-		for (auto eIter = enemys.begin(); eIter != enemys.end();) {
+		for (auto eIter = enemys1.begin(); eIter != enemys1.end();) {
 			if (eIter->CheckCollision(*bIter)) {
 				if (eIter->hp <= 0) {
-					eIter = enemys.erase(eIter);
+					eIter = enemys1.erase(eIter);
 					gameScore += 100;
 				}
 				bIter = playerBullets.erase(bIter);
-				goto doubleBreak;
+				goto doubleBreak1;
 			}
 			else
 				eIter++;
 		}
 		bIter++;
-		doubleBreak:;
+		doubleBreak1:;
+	}
+
+	//player bullet ㅡ enemy
+	for (auto bIter = playerBullets.begin(); bIter != playerBullets.end();) {
+		for (auto eIter = enemys2.begin(); eIter != enemys2.end();) {
+			if (eIter->CheckCollision(*bIter)) {
+				if (eIter->hp <= 0) {
+					eIter = enemys2.erase(eIter);
+					gameScore += 100;
+				}
+				bIter = playerBullets.erase(bIter);
+				goto doubleBreak2;
+			}
+			else
+				eIter++;
+		}
+		bIter++;
+		doubleBreak2:;
 	}
 
 
@@ -290,8 +341,11 @@ void CGallagDlg::Collision()
 
 void CGallagDlg::DrawObject(CPaintDC& dc) {
 	//DrawEnemy
-	for (int i = 0; i < enemys.size(); i++) {
-		enemys[i].DrawObject(dc, &gameImage, GameObj::DrawType::ENEMY1);
+	for (auto iter = enemys1.begin(); iter != enemys1.end(); iter++) {
+		iter->DrawObject(dc, &gameImage, GameObj::ENEMY1);
+	}
+	for (auto iter = enemys2.begin(); iter != enemys2.end(); iter++) {
+		iter->DrawObject(dc, &gameImage, GameObj::ENEMY4);
 	}
 
 	//DrawEnemyBullets
@@ -359,8 +413,12 @@ void CGallagDlg::GameStart()
 	player.Reset();
 
 	enemyMaker.max = 30;
+	enemy2Maker.max = 50;
+	itemMaker.max = 200;
 
-	vector<Enemy>().swap(enemys);
+	//리스트 비우기
+	list<Enemy>().swap(enemys1);
+	list<Enemy2>().swap(enemys2);
 	list<GameObj>().swap(playerBullets);
 	list<GameObj>().swap(enemyBullets);
 

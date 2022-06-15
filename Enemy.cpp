@@ -24,17 +24,16 @@ double Enemy::GetRandomX()
 	return num;
 }
 
+
 bool Enemy::Move()
 {
-	/*if (bulletMaker.count < 3) {
-		return false;
-	}*/
-
 	posX += velocityX;
 	posY += velocityY;
 
+
 	return !IsInGameBoard();
 }
+
 
 void Enemy::DrawObject(CDC& dc, CImage* gameImage, GameObj::DrawType type)
 {
