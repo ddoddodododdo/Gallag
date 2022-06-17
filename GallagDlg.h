@@ -5,6 +5,7 @@
 #pragma once
 #include <vector>
 #include <list>
+#include <iostream>
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>

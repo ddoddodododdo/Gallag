@@ -13,7 +13,8 @@ using namespace std;
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
-
+//콘솔창 띄우기
+//#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
 
 // 응용 프로그램 정보에 사용되는 CAboutDlg 대화 상자입니다.
 
@@ -113,7 +114,8 @@ BOOL CGallagDlg::OnInitDialog()
 
 	//gameImage.Load(L"Galaga.png");
 	gameImage.LoadFromResource(AfxGetInstanceHandle(), IDB_GAME);
-
+	
+	
 	//창 크기 조절
 	CRect rect;
 	GetWindowRect(&rect);
@@ -184,6 +186,7 @@ void CGallagDlg::OnPaint()
 	else if (nowGameState == Play) {
 		ControllPlayer();
 		ControllEnemy();
+		ControllItem();
 		Collision();
 	
 		DrawObject(dc);
@@ -201,9 +204,20 @@ void CGallagDlg::ControllPlayer() {
 
 	//Make Player Bullet
 	if (player.bulletMaker.CanMake()) {
-		GameObj bullet{ player.posX, player.posY };
-		bullet.velocityY = -20;
-		playerBullets.push_back(bullet);
+		int itemVal = player.itemTime > 0;
+		if (itemVal) {
+			int posX = player.posX - 12;
+			for (int i = 0; i <= itemVal; i++) {
+				GameObj bullet{ posX += 8 , player.posY };
+				bullet.velocityY = -20;
+				playerBullets.push_back(bullet);
+			}
+		}
+		else {
+			GameObj bullet{ player.posX  , player.posY };
+			bullet.velocityY = -20;
+			playerBullets.push_back(bullet);
+		}
 	}
 
 	//Player Bullet Move
@@ -274,10 +288,20 @@ void CGallagDlg::ControllEnemy() {
 	}
 }
 
+
 void CGallagDlg::ControllItem()
 {
-	for (auto iter = items.begin(); iter != items.end();) {
+	if (itemMaker.CanMake()) {
+		GameObj item;
+		item.posX = rand() % (BOARD_SIZE_X - 50) + 50;
+		item.posY = 0;
+		item.velocityY = 5;
+		items.push_back(item);
+		
+	}
 
+	cout << items.size() << endl;
+	for (auto iter = items.begin(); iter != items.end();) {
 		if (iter->Move())
 			iter = items.erase(iter);
 		else
@@ -337,6 +361,15 @@ void CGallagDlg::Collision()
 			iter++;
 	}
 
+	//item - player
+	for (auto iter = items.begin(); iter != items.end();) {
+		if (player.CheckGetItem(*iter)) {
+			iter = items.erase(iter);
+		}
+		else
+			iter++;
+	}
+
 }
 
 void CGallagDlg::DrawObject(CPaintDC& dc) {
@@ -351,6 +384,13 @@ void CGallagDlg::DrawObject(CPaintDC& dc) {
 	//DrawEnemyBullets
 	for (auto iter = enemyBullets.begin(); iter != enemyBullets.end(); iter++) {
 		dc.Ellipse(iter->posX + 3, iter->posY + 3, iter->posX - 3, iter->posY - 3);
+	}
+
+	//Draw Item 295 319 307
+	for (auto iter = items.begin(); iter != items.end(); iter++) {
+		//dc.Rectangle(iter->posX - 10, iter->posY - 10, iter->posX + 20, iter->posY + 20);
+		gameImage.TransparentBlt(dc, iter->posX - 20, iter->posY - 20
+							, 14, 30, 360, 288, 7, 15, RGB(0, 0, 0));
 	}
 
 	//Draw Player
@@ -414,11 +454,12 @@ void CGallagDlg::GameStart()
 
 	enemyMaker.max = 30;
 	enemy2Maker.max = 50;
-	itemMaker.max = 200;
+	itemMaker.max = 150;
 
 	//리스트 비우기
 	list<Enemy>().swap(enemys1);
 	list<Enemy2>().swap(enemys2);
+	list<GameObj>().swap(items);
 	list<GameObj>().swap(playerBullets);
 	list<GameObj>().swap(enemyBullets);
 

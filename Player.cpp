@@ -32,13 +32,20 @@ void Player::Move(InputKey input)
 	if (posY < 0) posY = 0;
 	else if (posY > BOARD_SIZE_Y - 50) posY = BOARD_SIZE_Y - 50;
 
-	itemTime = itemTime > 0 ? itemTime-- : 0;
+	itemTime--;
+	
+	//itemTime = itemTime > 0 ? itemTime-- : 0;
 }
 
-void Player::CheckGetItem(GameObj* item)
+bool Player::CheckGetItem(GameObj item)
 {
-
-
+	bool flag = CheckCollision(item, 1);
+	if (flag) {
+		itemTime = 100;
+		hp++;
+	}
+	
+	return flag;
 }
 
 
