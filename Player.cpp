@@ -39,7 +39,7 @@ void Player::Move(InputKey input)
 
 bool Player::CheckGetItem(GameObj item)
 {
-	bool flag = CheckCollision(item, 1);
+	bool flag = CheckCollision(item, 2);
 	if (flag) {
 		itemTime = 100;
 		hp++;

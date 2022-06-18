@@ -190,10 +190,10 @@ void CGallagDlg::OnPaint()
 		Collision();
 	
 		DrawObject(dc);
-		DrawScore(dc);
 
 		gameScore++;
 	}
+	DrawScore(dc);
 
 	
 }
@@ -430,14 +430,17 @@ void CGallagDlg::DrawHome(CPaintDC& dc)
 
 void CGallagDlg::DrawScore(CPaintDC& dc)
 {
+	CString gameScoreStr;
 	dc.SetBkMode(TRANSPARENT);
 	dc.SetTextColor(RGB(255, 255, 255));
-	dc.SetTextAlign(TA_LEFT);
-	dc.TextOutW(0, 0, _T("Score"));
-	
-	CString gameScoreStr;
-	gameScoreStr.Format(_T("%d"), gameScore);
-	dc.TextOutW(0, 15, gameScoreStr);
+
+	if (nowGameState == Play) {
+		dc.SetTextAlign(TA_LEFT);
+		dc.TextOutW(0, 0, _T("Score"));
+
+		gameScoreStr.Format(_T("%d"), gameScore);
+		dc.TextOutW(0, 15, gameScoreStr);
+	}
 
 	dc.SetTextAlign(TA_RIGHT);
 	dc.TextOutW(BOARD_SIZE_X-20, 0, _T("BestScore"));
@@ -453,7 +456,7 @@ void CGallagDlg::GameStart()
 	player.Reset();
 
 	enemyMaker.max = 30;
-	enemy2Maker.max = 50;
+	enemy2Maker.max = 40;
 	itemMaker.max = 150;
 
 	//리스트 비우기

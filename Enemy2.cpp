@@ -5,7 +5,7 @@ Enemy2::Enemy2()
 {
 	//Enemy::Enemy();
 	sinParam = (rand() % 100) * 0.0314;
-	bulletMaker.max = 60;
+	bulletMaker.max = 50;
 }
 
 bool Enemy2::Move()
